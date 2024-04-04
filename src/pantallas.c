@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "pantallas.h"
+#include <string.h>
 
 // He cambiado el nombre del archivo para que sea mas descriptivo
 
@@ -18,7 +19,7 @@ void logo()
 
 void cerrar()
 {
-    // código para cerrar
+    exit(-1);
 }
 
 void pantalla1()
@@ -74,9 +75,12 @@ void pantalla11()
     printf("Repite la contrasena: ");
     scanf("%s", contrasenaNue);
 
-    if (nombre != "" && apellido != "" && nick != "" && contrasena != "" && contrasenaNue != "" && contrasena == contrasenaNue) // No se por qué aquí peta
+    if (strlen(nombre) != 0 && strlen(apellido) != 0 && strlen(nick) != 0 && strlen(contrasena) != 0 && strlen(contrasenaNue) != 0 && strcmp(contrasena, contrasenaNue) == 0) 
     {
-        printf("Hola, %s. Has sido registrado correctamente!");
+        printf("Hola, %s. Has sido registrado correctamente!\n");
+        char opc[2];
+        printf("Pulsa cualquier tecla para continuar: ");
+        scanf("%s", opc);
         pantalla1();
     }
     else
@@ -167,7 +171,7 @@ void pantalla2()
     }
     else if (*opc == '4')
     {
-        pantalla63();
+        pantalla63(2);
     }
     else
     {
@@ -188,7 +192,7 @@ void pantalla31()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla3(); // habra que pasar como parametro el idioma (no pongo tildes por si luego peta, no soy imbecil (tambien con tilde). Si, ya se que duele ver las cosas asi, pero que querais que haga, joe!)
+        pantalla3(); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
@@ -200,13 +204,10 @@ void pantalla31()
     }
 }
 
-void pantalla3()
-{
-    system("cls");
-    logo();
+void display_pantalla3(int intentos_restantes){
     printf("                 A D I V I N A !                 \n");
     printf("=================================================\n\n");
-    printf("Intentos restantes: \n\n"); // rellenar
+    printf("Intentos restantes: %i\n\n", intentos_restantes); // rellenar
     printf("La palabra esta siendo imprimida en los LEDs\n\n");
     printf("Palabras usadas: \n\n");         // rellenar
     printf("Pistas: \n\n");                  // rellenar
@@ -215,6 +216,17 @@ void pantalla3()
     printf("1. Insertar palabra\n");
     printf("2. Mostrar pista (Recuerda que tu puntuacion disminuira)\n");
     printf("3. Rendirse\n");
+}
+
+void pantalla3()
+{
+    system("cls");
+    logo();
+    int intentos_restantes= 7;
+    display_pantalla3(intentos_restantes); //añadir aqui las palabras usadas, las pistas y las letras acertadas 
+    char* adivinanza; //no se como se podria hacer esto, se necesita el size
+    //adivinanza = sortear_palabra(); //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+    
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
@@ -223,6 +235,8 @@ void pantalla3()
         char palabra[15];
         printf("Introduce palabra:");
         scanf("%s", palabra);
+
+
         // funcion
         //  si acierta: pantalla32()
     }
@@ -249,7 +263,7 @@ void pantalla32()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla63();
+        pantalla63(32);
     }
 }
 
@@ -276,7 +290,7 @@ void pantalla4()
     }
     else if (*opc == '2')
     {
-        pantalla63();
+        pantalla63(4);
     }
 }
 
@@ -287,7 +301,7 @@ void pantalla41()
     printf("         T U S  E S T A D I S T I C A S          \n");
     printf("=================================================\n\n");
     printf("Porcentaje de aciertos: \n");
-    printf("Numero de partida jugadas: \n");
+    printf("Numero de partidas jugadas: \n");
     printf("Media de intentos: \n");
     printf("Opciones:\n");
     printf("1. Exportar mis estadisticas a fichero\n");
@@ -321,7 +335,7 @@ void pantalla5()
     }
 }
 
-void pantalla61()
+void pantalla61(int pantalla)
 {
     system("cls");
     logo();
@@ -366,7 +380,7 @@ void pantalla62()
     }
 }
 
-void pantalla63()
+void pantalla63(int pantalla)
 {
     system("cls");
     logo();
@@ -380,11 +394,19 @@ void pantalla63()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla2();
+        pantalla1();
     }
     else if (*opc == '2')
     {
-         //no se que va aqui
+        if(pantalla == 2){
+            pantalla2();
+        }
+        else if(pantalla == 32){
+            pantalla32();
+        }
+        else if(pantalla == 4){
+            pantalla4();
+        }
     }
 }
 
@@ -406,6 +428,6 @@ void pantalla64()
     }
     else if (*opc == '2')
     {
-         //no se que va aqui
+        pantalla1();
     }
 }

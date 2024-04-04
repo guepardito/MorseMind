@@ -9,6 +9,8 @@ void cerrar();
 void pantalla2();
 void pantalla31();
 void pantalla32();
+void display_pantalla3(int intentos_restantes);
+char* sortear_palabra(); // falta meterle el usuario?
 void pantalla3();
 void pantalla4();
 void pantalla41();

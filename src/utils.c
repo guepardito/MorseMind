@@ -8,6 +8,7 @@ void exportarEstadisticas(float porcentaje, int partidas, float media){
     f = fopen("nombreArchivo.txt", "w");
     if(f == NULL){
         printf("Error 403");
+        return;
     }
     fprintf(f, "Porcentaje de aciertos: %.2f\n", porcentaje);
     fprintf(f, "Numero de partidas jugadas: %i\n", partidas);
@@ -15,3 +16,4 @@ void exportarEstadisticas(float porcentaje, int partidas, float media){
             
     fclose(f);
 }
+

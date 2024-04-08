@@ -171,7 +171,7 @@ void pantalla2()
     }
     else if (*opc == '4')
     {
-        pantalla63(2);
+        pantalla65(2);
     }
     else
     {
@@ -192,11 +192,13 @@ void pantalla31()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla3(); // habra que pasar como parametro el idioma 
+        system("cls");
+        pantalla3(7, 0); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
-        pantalla3();
+        system("cls");
+        pantalla3(7, 0);
     }
     else
     {
@@ -204,9 +206,13 @@ void pantalla31()
     }
 }
 
-void display_pantalla3(int intentos_restantes){
+void display_pantalla3(int intentos_restantes, int fallado){
     printf("                 A D I V I N A !                 \n");
     printf("=================================================\n\n");
+    if (fallado==1){
+            fallado=0;
+            printf("Lo siento, no es correcto. Intentalo otra vez!\n");
+        }
     printf("Intentos restantes: %i\n\n", intentos_restantes); // rellenar
     printf("La palabra esta siendo imprimida en los LEDs\n\n");
     printf("Palabras usadas: \n\n");         // rellenar
@@ -218,35 +224,81 @@ void display_pantalla3(int intentos_restantes){
     printf("3. Rendirse\n");
 }
 
-void pantalla3()
-{
-    system("cls");
-    logo();
-    int intentos_restantes= 7;
-    display_pantalla3(intentos_restantes); //añadir aqui las palabras usadas, las pistas y las letras acertadas 
-    char* adivinanza; //no se como se podria hacer esto, se necesita el size
-    //adivinanza = sortear_palabra(); //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+char* sortear_palabra(){ //recibir usuario para acceder a la base de datos y sortear entre palabras que el usu no haya hecho ya
+    return "adivinanza";
+}
+
+void pantalla3(int intentos_restantes, int fallado)
+{   
+    int jugando= 1;
+    while(jugando==1){
+        logo();
+        display_pantalla3(intentos_restantes, fallado); //añadir aqui las palabras usadas de intento, las pistas y las letras acertadas 
+        char* adivinanza; //no se como se podria hacer esto, se necesita el size
+        adivinanza = sortear_palabra(); //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        char opc[2];
+        printf("Introduzca la opcion deseada:");
+        scanf("%s", opc);
+        if (*opc == '1')
+        {
+            char palabra[15];
+            printf("Introduce palabra:");
+            scanf("%s", palabra);
+
+            if(strcmp(palabra, adivinanza)==0){
+                jugando=0;
+                system("cls");
+                pantalla32();
+            }
+            else{
+                //anyadir palabras usadas, letras que coincidan
+                system("cls");
+                //char opc[2];
+                //printf("Pulsa cualquier tecla para continuar: ");
+                //scanf("%s", opc);
+                fallado=1;
+                intentos_restantes-=1;
+                if (intentos_restantes==0){
+                    system("cls");
+                    logo();
+                    printf("                    V A Y A !                    \n");
+                    printf("=================================================\n\n");
+                    printf("Parece que te has quedado sin intentos, es una pena!\n");
+                    printf("Quieres jugar otra vez?\n");
+                    printf("1. Si, quiero jugar otra partida!\n");
+                    printf("2. No, quiero volver a la pantalla principal\n");
+                    printf("Introduzca la opcion deseada:");
+                    scanf("%s", opc);
+                    if (*opc == '1')
+                    {
+                        system("cls");
+                        pantalla31();
+                    } 
+                    else if(*opc == '2')
+                    {
+                        system("cls");
+                        pantalla2();
+                    }
     
-    char opc[2];
-    printf("Introduzca la opcion deseada:");
-    scanf("%s", opc);
-    if (*opc == '1')
-    {
-        char palabra[15];
-        printf("Introduce palabra:");
-        scanf("%s", palabra);
 
+                }
+                else{
+                    pantalla3(intentos_restantes, fallado);
+                }
+            }
 
-        // funcion
-        //  si acierta: pantalla32()
-    }
-    else if (*opc == '2')
-    {
-        // pista
-    }
-    else if (*opc == '3')
-    {
-        pantalla62();
+        }
+        else if (*opc == '2')
+        {
+            // pista
+        }
+        else if (*opc == '3')
+        {
+            system("cls");
+            jugando=0;
+            pantalla62(intentos_restantes);
+        }
+
     }
 }
 
@@ -258,12 +310,18 @@ void pantalla32()
     printf("=================================================\n\n");
     printf("Enhorabuena! Has acertado la palabra.\n\n");
     printf("1. Salir\n");
+    printf("2. Volver a jugar\n");
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
     if (*opc == '1')
     {
         pantalla63(32);
+    }
+
+    if (*opc == '2')
+    {
+        pantalla31();
     }
 }
 
@@ -357,7 +415,7 @@ void pantalla61(int pantalla)
     }
 }
 
-void pantalla62()
+void pantalla62(int intentos_restantes)
 {
     system("cls");
     logo();
@@ -375,8 +433,9 @@ void pantalla62()
         pantalla2();
     }
     else if (*opc == '2')
-    {
-         pantalla3();
+    {   
+        system("cls");
+         pantalla3(intentos_restantes, 0); 
     }
 }
 
@@ -393,15 +452,13 @@ void pantalla63(int pantalla)
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
     if (*opc == '1')
-    {
-        pantalla1();
+    {   if(pantalla == 32 | pantalla == 4){
+            pantalla2();
+        }
     }
     else if (*opc == '2')
     {
-        if(pantalla == 2){
-            pantalla2();
-        }
-        else if(pantalla == 32){
+        if(pantalla == 32){
             pantalla32();
         }
         else if(pantalla == 4){
@@ -409,6 +466,37 @@ void pantalla63(int pantalla)
         }
     }
 }
+
+void pantalla65(int pantalla)
+{
+    system("cls");
+    logo();
+    printf("                  A V I S O !                    \n");
+    printf("=================================================\n\n");
+    printf("Seguro que quieres volver al inicio?\n");
+    printf("1. Si\n");
+    printf("2. No\n");
+    char opc[2];
+    printf("Introduzca la opcion deseada:");
+    scanf("%s", opc);
+    if (*opc == '1')
+    {   if (pantalla==2){
+            pantalla1();
+        }
+    }
+    else if (*opc == '2')
+    {
+        if(pantalla == 2){
+            pantalla2();
+        }
+    }
+}
+
+
+
+
+
+
 
 void pantalla64()
 {

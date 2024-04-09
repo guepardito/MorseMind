@@ -77,7 +77,7 @@ void pantalla11()
 
     if (strlen(nombre) != 0 && strlen(apellido) != 0 && strlen(nick) != 0 && strlen(contrasena) != 0 && strlen(contrasenaNue) != 0 && strcmp(contrasena, contrasenaNue) == 0) 
     {
-        printf("Hola, %s. Has sido registrado correctamente!\n");
+        printf("Hola, %s. Has sido registrado correctamente!\n", nick);
         char opc[2];
         printf("Pulsa cualquier tecla para continuar: ");
         scanf("%s", opc);
@@ -234,8 +234,8 @@ void pantalla3(int intentos_restantes, int fallado)
     while(jugando==1){
         logo();
         display_pantalla3(intentos_restantes, fallado); //añadir aqui las palabras usadas de intento, las pistas y las letras acertadas 
-        char* adivinanza; //no se como se podria hacer esto, se necesita el size
-        adivinanza = sortear_palabra(); //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        char* adivinanza;                               //no se como se podria hacer esto, se necesita el size
+        adivinanza = sortear_palabra();                 //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
         char opc[2];
         printf("Introduzca la opcion deseada:");
         scanf("%s", opc);

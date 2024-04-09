@@ -9,16 +9,19 @@ void cerrar();
 void pantalla2();
 void pantalla31();
 void pantalla32();
-void display_pantalla3(int intentos_restantes, int fallado);
-char* sortear_palabra(); // falta meterle el usuario?
-void pantalla3(int intentos_restantes, int fallado);
+void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int fallado, int mal_input, int pista_mostrada);
+void pantalla3(int intentos_restantes,char** palabras_usadas, char* letras_conocidas, char*pista, int fallado, int mal_input, int pista_mostrada, char ** alfabeto);
 void pantalla4();
 void pantalla41();
 void pantalla5();
 void pantalla61();
-void pantalla62(int intentos_restantes);
+void pantalla62(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, char** alfabeto);
 void pantalla63();
 void pantalla64();
- void pantalla65(int pantalla);
+void pantalla65(int pantalla);
+
+char* sortear_palabra();// falta meterle el usuario para que no le toque la misma varias veces
+void mostrar_palabra_LEDS(char** alfabeto, char* adivinanza); //por ahora solo imprime por pantalla
+void crearAlfabeto(char *fichero, char **alfabeto);
 
 #endif

@@ -3,5 +3,4 @@
 
 void exportarEstadisticas(float porcentaje, int partidas, float media);
 
-char* sortear_palabra();
 #endif

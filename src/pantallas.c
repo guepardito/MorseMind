@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "pantallas.h"
 #include <string.h>
+#include "utils.h"
+#include <ctype.h>
 
 // He cambiado el nombre del archivo para que sea mas descriptivo
 
@@ -190,15 +192,30 @@ void pantalla31()
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
+    static char **alfabeto;
+    alfabeto= (char**) malloc(26* sizeof(char*));// hay que hacer free, no hace
+
+    static char* palabras_usadas[7];
+
+    static char letras_conocidas[15];
+
+    static char pista[5];
+
     if (*opc == '1')
     {
         system("cls");
-        pantalla3(7, 0); // habra que pasar como parametro el idioma 
+        crearAlfabeto("Traducciones/internacional.txt", alfabeto);
+        for(int i = 0; i<26; i++){
+            printf("%s\n", alfabeto[i]);
+        }
+        
+        pantalla3(7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, alfabeto); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
+        crearAlfabeto("Traducciones/americano.txt", alfabeto);
         system("cls");
-        pantalla3(7, 0);
+        pantalla3(7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, alfabeto);
     }
     else
     {
@@ -206,36 +223,63 @@ void pantalla31()
     }
 }
 
-void display_pantalla3(int intentos_restantes, int fallado){
+void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int fallado, int mal_input, int pista_mostrada){
     printf("                 A D I V I N A !                 \n");
     printf("=================================================\n\n");
-    if (fallado==1){
-            fallado=0;
-            printf("Lo siento, no es correcto. Intentalo otra vez!\n");
+    
+     if (mal_input==1){
+        mal_input=0;
+        printf("Intentalo otra vez, esa opcion no existe\n");
+    }
+
+    else if (fallado==1){
+        fallado=0;
+        printf("Lo siento. Intentalo otra vez!\n");
+    }
+
+    else if (pista_mostrada==1){
+        pista_mostrada=0;
+        printf("Se ha guardado la pista correctamente\n");
+    }
+
+    printf("Intentos restantes: %i\n\n", intentos_restantes); 
+    printf("La palabra esta siendo impresa en los LEDs\n\n");
+    printf("Palabras usadas: \n");         
+    for(int i=0; i<7;i++){
+        if(palabras_usadas[i]!=NULL){
+            printf("\t-  %s\n", palabras_usadas[i]);
         }
-    printf("Intentos restantes: %i\n\n", intentos_restantes); // rellenar
-    printf("La palabra esta siendo imprimida en los LEDs\n\n");
-    printf("Palabras usadas: \n\n");         // rellenar
-    printf("Pistas: \n\n");                  // rellenar
-    printf("Has acertado las letras: \n\n"); // rellenar
+    }
+    
+    printf("Pistas: \n");
+    for(int a=0; a<strlen(pista);a++){
+        if(pista!=NULL & isalpha(pista[a])){
+            printf("\t-  %c\n", pista[a]);
+        }
+    }
+    printf("Conoces las letras: \n");
+    if(strlen(letras_conocidas)!=0){
+        for(int i=0; i<strlen(letras_conocidas);i++){
+            printf("\t-  %c\n", letras_conocidas[i]);
+        }
+    }
+    printf("\n");
+
     printf("Opciones: \n");
     printf("1. Insertar palabra\n");
     printf("2. Mostrar pista (Recuerda que tu puntuacion disminuira)\n");
     printf("3. Rendirse\n");
 }
 
-char* sortear_palabra(){ //recibir usuario para acceder a la base de datos y sortear entre palabras que el usu no haya hecho ya
-    return "adivinanza";
-}
-
-void pantalla3(int intentos_restantes, int fallado)
+void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int fallado, int mal_input, int pista_mostrada, char** alfabeto)
 {   
     int jugando= 1;
     while(jugando==1){
         logo();
-        display_pantalla3(intentos_restantes, fallado); //añadir aqui las palabras usadas de intento, las pistas y las letras acertadas 
-        char* adivinanza;                               //no se como se podria hacer esto, se necesita el size
-        adivinanza = sortear_palabra();                 //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, fallado, mal_input, pista_mostrada); //añadir aqui las pistas y las letras acertadas 
+        char* adivinanza;                               
+        adivinanza = sortear_palabra();                   //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        //mostrar_palabra_LEDS(alfabeto, adivinanza);     //se imprime por pantalla
         char opc[2];
         printf("Introduzca la opcion deseada:");
         scanf("%s", opc);
@@ -245,7 +289,7 @@ void pantalla3(int intentos_restantes, int fallado)
             printf("Introduce palabra:");
             scanf("%s", palabra);
 
-            if(strcmp(palabra, adivinanza)==0){
+            if(strcasecmp(palabra, adivinanza)==0){         
                 jugando=0;
                 system("cls");
                 pantalla32();
@@ -257,7 +301,37 @@ void pantalla3(int intentos_restantes, int fallado)
                 //printf("Pulsa cualquier tecla para continuar: ");
                 //scanf("%s", opc);
                 fallado=1;
+                mal_input=0;
+                pista_mostrada=0;
+
                 intentos_restantes-=1;
+                palabras_usadas[7-intentos_restantes-1]= palabra;
+
+                int indice=strlen(letras_conocidas);
+
+                for(int i=0; i< strlen(palabra); i++){
+                    for(int j=0; j < strlen(adivinanza); j++){
+                        if (tolower(palabra[i])==tolower(adivinanza[j])){
+                            int encontrado=0;
+                            for(int k=0; k<strlen(letras_conocidas); k++){
+                                if(tolower(palabra[i])== tolower(letras_conocidas[k])){
+                                    encontrado=1;
+                                } 
+                            }
+                            if(encontrado==0){
+                                letras_conocidas[indice]= tolower(palabra[i]);
+                                indice++;
+                            }
+                            
+                        }
+                    }
+                }
+
+                
+
+
+//programar letras acertadas
+
                 if (intentos_restantes==0){
                     system("cls");
                     logo();
@@ -283,20 +357,83 @@ void pantalla3(int intentos_restantes, int fallado)
 
                 }
                 else{
-                    pantalla3(intentos_restantes, fallado);
+                    pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, fallado, mal_input, pista_mostrada, alfabeto);
                 }
             }
 
         }
         else if (*opc == '2')
         {
-            // pista
+            if( strlen(pista)<5){
+                int i=0;
+                int j;
+                int encontrada=0;
+
+                mal_input=0;
+                
+                while(i<strlen(adivinanza)& encontrada==0){
+                    j=0;
+                    int encontrar=1;
+                    while(j<strlen(letras_conocidas)& encontrar==1){
+                        if(tolower(adivinanza[i])==tolower(letras_conocidas[j])){
+                            encontrar=0;
+                        }
+                        j++;
+                    }
+                    if(encontrar==1){
+                        int mostrada=0;
+                        int k=0;
+                        while(k< strlen(pista)&mostrada==0){
+                            if(pista[k]==adivinanza[i]){
+                                mostrada=1;
+                            }
+                            k++;
+                        }
+                        if(mostrada==0){
+                            encontrada=1;
+                            printf("Una de las letras de la palabra a adivinar es... '%c'\n", adivinanza[i]);
+                            pista_mostrada=1;
+                            fallado=0;
+                            int indice=strlen(pista);
+                            pista[indice]=adivinanza[i];
+
+                            char opc[2];
+                            printf("Pulsa cualquier tecla para continuar: ");
+                            scanf("%s", opc);
+                        }
+                    }
+
+                    i++;
+                }
+
+                if(encontrada==0){
+                    printf("Lo siento, no se ha podido encontrar una pista en este momento\n");
+                    fallado=1;
+                    pista_mostrada=0;
+                    char opc[2];
+                    printf("Pulsa cualquier tecla para continuar: ");
+                    scanf("%s", opc);
+                }
+                
+            }
+            else{
+                printf("Lo siento, no puedes pedir mas pistas. Ya has gastado tus 5 pistas disponibles\n");
+                fallado=1;
+                pista_mostrada=0;
+                char opc[2];
+                printf("Pulsa cualquier tecla para continuar: ");
+                scanf("%s", opc);
+            }
         }
         else if (*opc == '3')
         {
             system("cls");
             jugando=0;
-            pantalla62(intentos_restantes);
+            pantalla62(intentos_restantes, palabras_usadas, letras_conocidas, pista, alfabeto);
+        }
+        else{
+            mal_input=1;
+            fallado=0;
         }
 
     }
@@ -415,7 +552,7 @@ void pantalla61(int pantalla)
     }
 }
 
-void pantalla62(int intentos_restantes)
+void pantalla62(int intentos_restantes, char** palabras_usadas, char* letras_acertadas, char* pista, char** alfabeto)
 {
     system("cls");
     logo();
@@ -435,7 +572,7 @@ void pantalla62(int intentos_restantes)
     else if (*opc == '2')
     {   
         system("cls");
-         pantalla3(intentos_restantes, 0); 
+         pantalla3(intentos_restantes, palabras_usadas, letras_acertadas, pista, 0, 0, 0, alfabeto); 
     }
 }
 
@@ -512,10 +649,119 @@ void pantalla64()
     scanf("%s", opc);
     if (*opc == '1')
     {
+        printf("Hasta la proxima!");
         cerrar();
     }
     else if (*opc == '2')
     {
         pantalla1();
     }
+}
+
+
+char* sortear_palabra(){ //recibir usuario para acceder a la base de datos y sortear entre palabras que el usu no haya hecho ya
+    return "ADIVINANZA";
+}
+
+
+void mostrar_palabra_LEDS(char** alfabeto, char* adivinanza){
+    
+    for (int i=0; i<strlen(adivinanza); i++){
+        int no_encontrado= 1;
+        int j=0;
+        while(no_encontrado==1){
+            if(adivinanza[i]==alfabeto[j][0]){
+                no_encontrado=0;
+            }
+            j++;
+        }
+
+        printf("%s", alfabeto[j][1]);
+    }
+}
+
+
+
+
+void crearAlfabeto(char *fichero, char **alfabeto){
+    //Matriz alfabeto:
+    /* [A][.][-]...
+       [B][-][-]...
+       [C][.][.]...
+       [D][.][-]...
+       [E][.][.]...
+    */
+
+    
+
+    //FICHERO
+    FILE *archivo;
+    archivo = fopen(fichero, "r");
+    if(archivo == NULL){
+        perror("ERROR 404: No se ha podido encontrar el archivo");
+        return;
+    }
+    int fila = 0;
+    int col = 0;
+    char c;
+    int size = 0;
+    int i = 0;
+    while((c = fgetc(archivo)) != EOF){
+        //printf("%c\n", c);
+        if(c == ' ' || c == ':'){
+            continue;
+        }else if(c != '\n'){
+            size ++;
+        }else if(c == '\n'){
+            alfabeto[i] = (char*)malloc((size+1)*sizeof(char));
+            //printf("Tamaño para fila %d: %d\n", i, size+1);
+            i++;
+            //printf("%i\n", i);
+            size = 0;
+        }
+    }
+    //Para guardar memoria cuando llegue al final del fichero porque el anterior solo se ejecuta cuando llega a \n
+    alfabeto[i] = (char*)malloc((size+1)*sizeof(char));
+    //fclose(archivo);
+    
+    fila = 0;
+    col = 0;
+    fseek(archivo, 0, SEEK_SET); //Para volver arriba del fichero porque en el anterior bucle
+    //ya se ha llegado al final
+    while((c = fgetc(archivo))!= EOF){
+        if(c == ':' || c == ' '){
+            continue;
+        }
+        else if(c == '\n'){
+            alfabeto[fila][col] = '\0';
+            //printf("Tamaño de la fila %d: %d\n", fila, col);
+            fila++;
+            col = 0;
+        }
+        else if(c == '_'){
+            alfabeto[fila][col] = ' ';
+            col++;
+        }
+        else{
+            alfabeto[fila][col] = c;
+            //printf("Guardado en alfabeto[%d][%d]: %c\n", fila, col, c);
+            col++;
+        }
+    }
+    fseek(archivo, 0, SEEK_SET);
+    //printf("Datos guardados en la matriz\n");
+
+
+    fclose(archivo);
+    for(int i = 0; i<26; i++){
+        printf("%s\n", alfabeto[i]);
+    }
+
+
+    
+
+    for(int i = 0; i<26; i++){
+        free(alfabeto[i]);
+    }
+
 }

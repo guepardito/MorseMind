@@ -1,5 +1,12 @@
 #include "utils.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include "string.h"
+
+//#define INTER "Traducciones/internacional.txt"  //1
+//#define AMER "Traducciones/americano.txt"       //2
+
+
 
 void exportarEstadisticas(float porcentaje, int partidas, float media){
     FILE* f;
@@ -16,4 +23,5 @@ void exportarEstadisticas(float porcentaje, int partidas, float media){
             
     fclose(f);
 }
+
 

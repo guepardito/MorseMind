@@ -124,7 +124,7 @@ void pantalla12()
     printf("Contrasena: ");
     scanf("%s", contrasena);
 
-    pantalla2(); // esto está para hacer pruebas, cuando conectemos a la BD, quitar!
+    pantalla2(nick); // esto está para hacer pruebas, cuando conectemos a la BD, quitar!
     /*
     if (aquí hay que comprobar con la base de datos)
     {
@@ -148,7 +148,7 @@ void pantalla12()
     */
 }
 
-void pantalla2()
+void pantalla2(char *nick)
 {
     system("cls");
     logo();
@@ -166,19 +166,19 @@ void pantalla2()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla31();
+        pantalla31(nick);
     }
     else if (*opc == '2')
     {
-        pantalla4();
+        pantalla4(nick);
     }
     else if (*opc == '3')
     {
-        pantalla5();
+        pantalla5(nick);
     }
     else if (*opc == '4')
     {
-        pantalla65(2);
+        pantalla65(2, nick);
     }
     else
     {
@@ -186,7 +186,7 @@ void pantalla2()
     }
 }
 
-void pantalla31()
+void pantalla31(char *nick)
 {
     system("cls");
     logo();
@@ -203,6 +203,8 @@ void pantalla31()
     static char letras_conocidas[15];
 
     static char pista[5];
+    
+    
 
     if (*opc == '1')
     {
@@ -212,21 +214,21 @@ void pantalla31()
             printf("%s\n", alfabeto[i]);
         }
         
-        pantalla3(7, palabras_usadas, letras_conocidas, pista, 0, 0, 0); // habra que pasar como parametro el idioma 
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
         crearAlfabeto("Traducciones/americano.txt");
         system("cls");
-        pantalla3(7, palabras_usadas, letras_conocidas, pista, 0, 0, 0);
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0);
     }
     else
     {
-        pantalla31();
+        pantalla31(nick);
     }
 }
 
-void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int fallado, int mal_input, int pista_mostrada){
+void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada){
     printf("                 A D I V I N A !                 \n");
     printf("=================================================\n\n");
     
@@ -245,7 +247,7 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
         printf("Se ha guardado la pista correctamente\n");
     }
 
-
+    printf("Puntuacion: %i\n\n", puntuacion); 
     printf("Intentos restantes: %i\n\n", intentos_restantes); 
     printf("La palabra esta siendo impresa en los LEDs\n\n");
     printf("Palabras usadas: \n");         
@@ -269,13 +271,6 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
     }
     printf("\n");
 
-    //PRUEBA    PRUEBA  PRUEBA  PRUEBA
-    //PRUEBA    PRUEBA  PRUEBA  PRUEBA
-    //PRUEBA    PRUEBA  PRUEBA  PRUEBA 
-    actualizar_puntuacion(15);
-    mostrar_puntuacion();
-    printf("\n");
-
     printf("Opciones: \n");
     printf("1. Insertar palabra\n");
     printf("2. Mostrar pista (Recuerda que tu puntuacion disminuira)\n");
@@ -290,9 +285,11 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
 //PRUEBA    //PRUEBA
 
 // Variables globales para la puntuacion y las pistas utilizadas
-int puntuacion = 0;
+
 int pistas_utilizadas = 0;
-int penalizacion_pistas = 7;    // Puntuacion que se resta por cada pista utilizada
+
+/*int puntuacion = 0;
+int penalizacion_pistas = 10;    // Puntuacion que se resta por cada pista utilizada
 
 // Funcion para actualizar la puntuacion
 void actualizar_puntuacion(int puntos) {
@@ -314,18 +311,29 @@ void mostrar_puntuacion() {
 void mostrar_pistas_utilizadas() {
     printf("Pistas utilizadas: %d\n", pistas_utilizadas);
 }
+*/
+
+  int recalcular_puntuacion(char* adivinanza, int intentos_restantes, char *pista){
+    int puntuacion= ((int)strlen(adivinanza))*20 + intentos_restantes*15 - ((int)strlen(pista))*40;
+    if(puntuacion<0){
+        puntuacion=0;
+    }
+    return puntuacion;
+  }
 
 
-
-
-void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int fallado, int mal_input, int pista_mostrada)
+void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada)
 {   
     int jugando= 1;
     while(jugando==1){
         logo();
-        display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, fallado, mal_input, pista_mostrada); //añadir aqui las pistas y las letras acertadas 
-        char* adivinanza;                               
-        adivinanza = sortear_palabra();                   //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        
+        char* adivinanza;             //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho                  
+        adivinanza = sortear_palabra();  
+        int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);
+
+        display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada); //añadir aqui las pistas y las letras acertadas 
+        
         //mostrar_palabra_LEDS(alfabeto, adivinanza);     //se imprime por pantalla
         char opc[2];
         printf("Introduzca la opcion deseada:");
@@ -339,7 +347,7 @@ void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_cono
             if(strcasecmp(palabra, adivinanza)==0){         
                 jugando=0;
                 system("cls");
-                pantalla32();
+                pantalla32(nick, puntuacion);
             }
             else{
                 //anyadir palabras usadas, letras que coincidan
@@ -360,6 +368,18 @@ void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_cono
                     for(int j=0; j < strlen(adivinanza); j++){
                         if (tolower(palabra[i])==tolower(adivinanza[j])){
                             int encontrado=0;
+
+                            
+                            //PRUEBA    PRUEBA  PRUEBA  PRUEBA
+                            //PRUEBA    PRUEBA  PRUEBA  PRUEBA
+                            //PRUEBA    PRUEBA  PRUEBA  PRUEBA 
+                            /*
+                            printf("\n");
+                            actualizar_puntuacion(15);
+                            mostrar_puntuacion();
+                            printf("\n");*/
+
+                            
                             for(int k=0; k<strlen(letras_conocidas); k++){
                                 if(tolower(palabra[i])== tolower(letras_conocidas[k])){
                                     encontrado=1;
@@ -393,18 +413,18 @@ void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_cono
                     if (*opc == '1')
                     {
                         system("cls");
-                        pantalla31();
+                        pantalla31(nick);
                     } 
                     else if(*opc == '2')
                     {
                         system("cls");
-                        pantalla2();
+                        pantalla2(nick);
                     }
     
 
                 }
                 else{
-                    pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, fallado, mal_input, pista_mostrada);
+                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada);
                 }
             }
 
@@ -420,10 +440,10 @@ void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_cono
                 //PRUEBA    PRUEBA  PRUEBA  PRUEBA
                 //PRUEBA    PRUEBA  PRUEBA  PRUEBA 
                 printf("\n Has solicitado una pista.\n");
-                penalizar_pista();
-                mostrar_puntuacion();
-                mostrar_pistas_utilizadas();
-                printf("\n");
+                //penalizar_pista();
+                //mostrar_puntuacion();
+                //mostrar_pistas_utilizadas();
+                //printf("\n");
 
                 mal_input=0;
                 
@@ -485,7 +505,7 @@ void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_cono
         {
             system("cls");
             jugando=0;
-            pantalla62(intentos_restantes, palabras_usadas, letras_conocidas, pista);
+            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion);
         }
         else{
             mal_input=1;
@@ -495,8 +515,29 @@ void pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_cono
     }
 }
 
-void pantalla32()
+
+//PRUEBA    PRUEBA  PRUEBA  PRUEBA
+//PRUEBA    PRUEBA  PRUEBA  PRUEBA
+
+void guardar_puntuacion_en_archivo(char *nick, int puntuacion) {
+    FILE *archivo;
+    archivo = fopen("Ranking/ranking.txt", "a"); // Abre el archivo en modo de apéndice
+
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    fprintf(archivo, "%s: %d\n", nick, puntuacion); // escribe la puntuacion y el nick en el .txt
+
+    fclose(archivo); //cierra el archivo
+}
+
+
+void pantalla32(char* nick, int puntuacion)
 {
+    guardar_puntuacion_en_archivo(nick, puntuacion);
+    
     system("cls");
     logo();
     printf("                 A D I V I N A !                 \n");
@@ -509,16 +550,16 @@ void pantalla32()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla63(32);
+        pantalla63(32, nick);
     }
 
     if (*opc == '2')
     {
-        pantalla31();
+        pantalla31(nick);
     }
 }
 
-void pantalla4()
+void pantalla4(char *nick)
 {
     system("cls");
     logo();
@@ -537,15 +578,15 @@ void pantalla4()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla41();
+        pantalla41(nick);
     }
     else if (*opc == '2')
     {
-        pantalla63(4);
+        pantalla63(4, nick);
     }
 }
 
-void pantalla41()
+void pantalla41(char *nick)
 {
     system("cls");
     logo();
@@ -566,11 +607,11 @@ void pantalla41()
     }
     else if (*opc == '2')
     {
-        pantalla4();
+        pantalla4(nick);
     }
 }
 
-void pantalla5()
+void pantalla5(char *nick)
 {
     system("cls");
     logo();
@@ -582,7 +623,7 @@ void pantalla5()
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla2();
+        pantalla2(nick);
     }
 }
 
@@ -608,7 +649,7 @@ void pantalla61(int pantalla)
     }
 }
 
-void pantalla62(int intentos_restantes, char** palabras_usadas, char* letras_acertadas, char* pista)
+void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_acertadas, char* pista, int puntuacion)
 {
     system("cls");
     logo();
@@ -623,16 +664,16 @@ void pantalla62(int intentos_restantes, char** palabras_usadas, char* letras_ace
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla2();
+        pantalla2(nick);
     }
     else if (*opc == '2')
     {   
         system("cls");
-         pantalla3(intentos_restantes, palabras_usadas, letras_acertadas, pista, 0, 0, 0); 
+         pantalla3(nick, intentos_restantes, palabras_usadas, letras_acertadas, pista, puntuacion, 0, 0, 0); 
     }
 }
 
-void pantalla63(int pantalla)
+void pantalla63(int pantalla, char *nick)
 {
     system("cls");
     logo();
@@ -646,21 +687,21 @@ void pantalla63(int pantalla)
     scanf("%s", opc);
     if (*opc == '1')
     {   if(pantalla == 32 | pantalla == 4){
-            pantalla2();
+            pantalla2(nick);
         }
     }
     else if (*opc == '2')
     {
         if(pantalla == 32){
-            pantalla32();
+            pantalla32(NULL, NULL);
         }
         else if(pantalla == 4){
-            pantalla4();
+            pantalla4(nick);
         }
     }
 }
 
-void pantalla65(int pantalla)
+void pantalla65(int pantalla, char *nick)
 {
     system("cls");
     logo();
@@ -680,7 +721,7 @@ void pantalla65(int pantalla)
     else if (*opc == '2')
     {
         if(pantalla == 2){
-            pantalla2();
+            pantalla2(nick);
         }
     }
 }

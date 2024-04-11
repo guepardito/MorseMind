@@ -5,14 +5,11 @@
 #include "utils.h"
 #include <ctype.h>
 
-char **alfabeto;
+
 char* palabras_usadas[7];
 char letras_conocidas[15];
 char pista[5];
 
-void crearAlf() {
-    alfabeto = (char**) malloc(26* sizeof(char*));
-}
 
 void logo()
 {
@@ -33,7 +30,6 @@ void cerrar()
 
 void pantalla1()
 {
-    crearAlf();
     system("cls");
     logo();
     printf("                  I N I C I O                    \n");
@@ -199,15 +195,14 @@ void pantalla31(char *nick)
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
-    
+    char **alfabeto;
+    alfabeto = (char**) malloc(26* sizeof(char*));
 
     if (*opc == '1')
     {
         system("cls");
-        crearAlfabeto("Traducciones/internacional.txt");
-        for(int i = 0; i<26; i++){
-            printf("%s\n", alfabeto[i]);
-        }
+        alfabeto= crearAlfabeto("Traducciones/internacional.txt", alfabeto);
+        
         for (int i = 0; i < 15; i++) {
         if (palabras_usadas[i] != NULL) {
             palabras_usadas[i][0] = '\0'; // Asignar el carácter nulo al primer carácter de la cadena
@@ -217,13 +212,13 @@ void pantalla31(char *nick)
         letras_conocidas[0]='\0';
     }
         
-        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0); // habra que pasar como parametro el idioma 
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0,alfabeto); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
-        crearAlfabeto("Traducciones/americano.txt");
+        alfabeto= crearAlfabeto("Traducciones/americano.txt", alfabeto);
         system("cls");
-        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0);
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0, alfabeto);
     }
     else
     {
@@ -231,7 +226,7 @@ void pantalla31(char *nick)
     }
 }
 
-void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada){
+void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, char* adivinanza){
     printf("                 A D I V I N A !                 \n");
     printf("=================================================\n\n");
     
@@ -252,7 +247,9 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
 
     printf("Puntuacion: %i\n\n", puntuacion); 
     printf("Intentos restantes: %i\n\n", intentos_restantes); 
-    printf("La palabra esta siendo impresa en los LEDs\n\n");
+    printf("La palabra esta siendo impresa en los LEDs\n");
+    mostrar_palabra_LEDS(adivinanza, alfabeto);     //se imprime por pantalla
+    printf("\n");
     printf("Palabras usadas: \n");         
     for(int i=0; i<7;i++){
         if(palabras_usadas[i]!=NULL && palabras_usadas[i][0]!= '\0'){
@@ -263,7 +260,7 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
     printf("Pistas: \n");
     for(int a=0; a<strlen(pista);a++){
         if(pista!=NULL & isalpha(pista[a])){
-            printf("\t-  %c\n", pista[a]);
+            printf("\t-  %c\n", tolower(pista[a]));
         }
     }
     printf("Conoces las letras: \n");
@@ -325,7 +322,7 @@ void mostrar_pistas_utilizadas() {
   }
 
 
-void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada)
+void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto)
 {   
     int jugando= 1;
     while(jugando==1){
@@ -335,9 +332,14 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
         adivinanza = sortear_palabra();  
         int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);
 
-        display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada); //añadir aqui las pistas y las letras acertadas 
+        display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); //añadir aqui las pistas y las letras acertadas 
+        //printf("%s\n", alfabeto);
+        /*for(int i = 0; i<26; i++){
+            printf("%s\n", alfabeto[i]);
+        }*/
+
         
-        //mostrar_palabra_LEDS(alfabeto, adivinanza);     //se imprime por pantalla
+
         char opc[2];
         printf("Introduzca la opcion deseada:");
         scanf("%s", opc);
@@ -431,7 +433,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 
                 }
                 else{
-                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada);
+                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto);
                 }
             }
 
@@ -512,7 +514,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
         {
             system("cls");
             jugando=0;
-            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion);
+            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto);
         }
         else{
             mal_input=1;
@@ -660,7 +662,7 @@ void pantalla61(int pantalla)
     }
 }
 */
-void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion)
+void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto)
 {
     system("cls");
     logo();
@@ -685,7 +687,7 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
     else if (*opc == '2')
     {   
         system("cls");
-         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0); 
+         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto); 
     }
 }
 
@@ -777,26 +779,34 @@ char* sortear_palabra(){ //recibir usuario para acceder a la base de datos y sor
 }
 
 
-void mostrar_palabra_LEDS(char* adivinanza){
-    
+void mostrar_palabra_LEDS(char* adivinanza, char** alfabeto){
+    //printf("%c\n", alfabeto[0][1]);
     for (int i=0; i<strlen(adivinanza); i++){
         int no_encontrado= 1;
         int j=0;
         while(no_encontrado==1){
             if(adivinanza[i]==alfabeto[j][0]){
                 no_encontrado=0;
+
+                int tamPala=strlen(alfabeto[j]);
+                char* morsePal=malloc(tamPala*sizeof(char));
+                for(int i=1;i<tamPala;i++){
+                    morsePal[i-1]=alfabeto[j][i];
+                }
+                morsePal[tamPala]='\0';
+                printf("%s\t" ,morsePal);
             }
+            
             j++;
         }
-
-        printf("%s", alfabeto[j][1]);
     }
+    printf("\n");
 }
 
 
 
 
-void crearAlfabeto(char *fichero){
+char** crearAlfabeto(char *fichero, char** alfabeto){
     //Matriz alfabeto:
     /* [A][.][-]...
        [B][-][-]...
@@ -812,7 +822,7 @@ void crearAlfabeto(char *fichero){
     archivo = fopen(fichero, "r");
     if(archivo == NULL){
         perror("ERROR 404: No se ha podido encontrar el archivo");
-        return;
+        return alfabeto;
     }
     int fila = 0;
     int col = 0;
@@ -865,9 +875,9 @@ void crearAlfabeto(char *fichero){
     //printf("Datos guardados en la matriz\n");
 
 
-    fclose(archivo);
+    fclose(archivo);/*
     for(int i = 0; i<26; i++){
         printf("%s\n", alfabeto[i]);
-    }
-
+    }*/
+return alfabeto;
 }

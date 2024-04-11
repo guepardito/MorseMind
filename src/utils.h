@@ -2,5 +2,4 @@
 #define UTILS_H_
 
 void exportarEstadisticas(float porcentaje, int partidas, float media);
-
 #endif

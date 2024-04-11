@@ -6,6 +6,9 @@
 #include <ctype.h>
 
 char **alfabeto;
+char* palabras_usadas[7];
+char letras_conocidas[15];
+char pista[5];
 
 void crearAlf() {
     alfabeto = (char**) malloc(26* sizeof(char*));
@@ -185,7 +188,6 @@ void pantalla2(char *nick)
         pantalla64();
     }
 }
-
 void pantalla31(char *nick)
 {
     system("cls");
@@ -197,13 +199,6 @@ void pantalla31(char *nick)
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
-
-    static char* palabras_usadas[7];
-
-    static char letras_conocidas[15];
-
-    static char pista[5];
-    
     
 
     if (*opc == '1')
@@ -213,6 +208,14 @@ void pantalla31(char *nick)
         for(int i = 0; i<26; i++){
             printf("%s\n", alfabeto[i]);
         }
+        for (int i = 0; i < 15; i++) {
+        if (palabras_usadas[i] != NULL) {
+            palabras_usadas[i][0] = '\0'; // Asignar el carácter nulo al primer carácter de la cadena
+        }
+
+        pista[0]='\0';
+        letras_conocidas[0]='\0';
+    }
         
         pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0); // habra que pasar como parametro el idioma 
     }
@@ -252,7 +255,7 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
     printf("La palabra esta siendo impresa en los LEDs\n\n");
     printf("Palabras usadas: \n");         
     for(int i=0; i<7;i++){
-        if(palabras_usadas[i]!=NULL){
+        if(palabras_usadas[i]!=NULL && palabras_usadas[i][0]!= '\0'){
             printf("\t-  %s\n", palabras_usadas[i]);
         }
     }
@@ -346,6 +349,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 
             if(strcasecmp(palabra, adivinanza)==0){         
                 jugando=0;
+    
                 system("cls");
                 pantalla32(nick, puntuacion);
             }
@@ -401,10 +405,13 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 
                 if (intentos_restantes==0){
                     system("cls");
+                    
                     logo();
                     printf("                    V A Y A !                    \n");
                     printf("=================================================\n\n");
                     printf("Parece que te has quedado sin intentos, es una pena!\n");
+                    puntuacion=-10;
+                    printf("Puntuacion: %i\n", puntuacion);
                     printf("Quieres jugar otra vez?\n");
                     printf("1. Si, quiero jugar otra partida!\n");
                     printf("2. No, quiero volver a la pantalla principal\n");
@@ -543,11 +550,15 @@ void pantalla32(char* nick, int puntuacion)
     printf("                 A D I V I N A !                 \n");
     printf("=================================================\n\n");
     printf("Enhorabuena! Has acertado la palabra.\n\n");
+    printf("Puntuacion: %i\n", puntuacion);
     printf("1. Salir\n");
     printf("2. Volver a jugar\n");
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
+    if(puntuacion!=0){ // importante que sea diferente de 0 -Nora
+         //almacenar puntuacion de partida
+    }
     if (*opc == '1')
     {
         pantalla63(32, nick);
@@ -626,7 +637,7 @@ void pantalla5(char *nick)
         pantalla2(nick);
     }
 }
-
+/*
 void pantalla61(int pantalla)
 {
     system("cls");
@@ -648,8 +659,8 @@ void pantalla61(int pantalla)
          //no se que va aqui
     }
 }
-
-void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_acertadas, char* pista, int puntuacion)
+*/
+void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion)
 {
     system("cls");
     logo();
@@ -664,12 +675,17 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
     scanf("%s", opc);
     if (*opc == '1')
     {
+        
+        puntuacion=-10;
+        printf("Puntuacion: %i\n", puntuacion);
+        printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Pulsa cualquier tecla para continuar: ");
+        scanf("%s", opc);
         pantalla2(nick);
     }
     else if (*opc == '2')
     {   
         system("cls");
-         pantalla3(nick, intentos_restantes, palabras_usadas, letras_acertadas, pista, puntuacion, 0, 0, 0); 
+         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0); 
     }
 }
 
@@ -693,7 +709,7 @@ void pantalla63(int pantalla, char *nick)
     else if (*opc == '2')
     {
         if(pantalla == 32){
-            pantalla32(NULL, NULL);
+            pantalla32(nick,0);
         }
         else if(pantalla == 4){
             pantalla4(nick);

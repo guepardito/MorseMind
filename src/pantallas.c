@@ -528,6 +528,11 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 //PRUEBA    PRUEBA  PRUEBA  PRUEBA
 //PRUEBA    PRUEBA  PRUEBA  PRUEBA
 
+typedef struct{
+        char nick[15];
+        int puntuacion;
+    } Registro;
+
 void guardar_puntuacion_en_archivo(char *nick, int puntuacion) {
     FILE *archivo;
     archivo = fopen("Ranking/ranking.txt", "a"); // Abre el archivo en modo de apéndice
@@ -537,9 +542,41 @@ void guardar_puntuacion_en_archivo(char *nick, int puntuacion) {
         return;
     }
 
-    fprintf(archivo, "%s: %d\n", nick, puntuacion); // escribe la puntuacion y el nick en el .txt
+   Registro ranking[500]; // Se asume un máximo de 500 registros
+    int num_registros = 0;
 
-    fclose(archivo); //cierra el archivo
+    // Leer los datos existentes del archivo
+    while (fscanf(archivo, "%s %d", ranking[num_registros].nick, &ranking[num_registros].puntuacion) == 2) {
+        num_registros++;
+    }
+
+    // Agregar el nuevo dato
+    strcpy(ranking[num_registros].nick, nick);
+    ranking[num_registros].puntuacion = puntuacion;
+    num_registros++;
+
+    // Ordenar los registros según la puntuación de mayor a menor
+    for (int i = 0; i < num_registros - 1; i++) {
+        for (int j = 0; j < num_registros - i - 1; j++) {
+            if (ranking[j].puntuacion < ranking[j + 1].puntuacion) {
+                // Intercambiar los registros
+                Registro temp = ranking[j];
+                ranking[j] = ranking[j + 1];
+                ranking[j + 1] = temp;
+            }
+        }
+    }
+
+    // Regresar al inicio del archivo
+    rewind(archivo);
+
+    // Escribir los datos ordenados en el archivo
+    for (int i = 0; i < num_registros; i++) {
+        fprintf(archivo, "%s %d\n", ranking[i].nick, ranking[i].puntuacion);
+    }
+
+    // Cerrar el archivo
+    fclose(archivo);
 }
 
 
@@ -578,6 +615,55 @@ void pantalla4(char *nick)
     logo();
     printf("                 R A N K I N G                   \n");
     printf("=================================================\n\n");
+
+    //Abrimos el archivo del ranking
+    FILE *archivo;
+    archivo = fopen("Ranking/ranking.txt", "r");
+    if (archivo == NULL){
+        printf("Error al abrir el archivo de ranking, \n");
+        return;
+    }
+
+
+
+    //Prueba  Prueba  Prueba  Prueba
+    //Prueba  Prueba  Prueba  Prueba
+    //Prueba  Prueba  Prueba  Prueba
+    //Prueba  Prueba  Prueba  Prueba
+
+
+    //definimos una estructura para almacenar 
+    //los datos de nick y puntuacion
+    
+
+    /*Registro ranking[500]; //No hay mas de 500 registros
+    int num_registros = 0;
+    while(fscanf(archivo, "%s, %d \n", ranking[num_registros].nick, &ranking[num_registros].puntuacion) == 2){
+        num_registros++;
+    }
+
+
+    //Ordenamos los registros segun la puntuacion de mayor a menor 
+    for (int i = 0; i < num_registros - 1; i++) {
+        for (int j = 0; j < num_registros - i - 1; j++) {
+            if (ranking[j].puntuacion < ranking[j + 1].puntuacion) {
+                // Intercambiar los registros
+                Registro temp = ranking[j];
+                ranking[j] = ranking[j + 1];
+                ranking[j + 1] = temp;
+            }
+        }
+    }
+
+    // Mostramos los 5 primeros registros ordenados por puntuacion
+    //printf("Puntuacion\tUsuario\n");
+    for (int i = 0; i < num_registros && i < 5; i++) {
+        printf("%d, %s\n", ranking[i].puntuacion, ranking[i].nick);
+    }
+
+    // Cerrar el archivo
+    fclose(archivo);*/
+
     printf("1. usuario: puntos\n");
     printf("2. usuario: puntos\n");
     printf("3. usuario: puntos\n");

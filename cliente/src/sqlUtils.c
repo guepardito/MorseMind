@@ -163,7 +163,7 @@ Usuario* leerUsuario(char* Apodo){
         sqlite3_finalize(stmt);
         return usuario;
     } else {
-			qlite3_finalize(stmt);
+			sqlite3_finalize(stmt);
         return NULL;
     }
 }
@@ -298,7 +298,7 @@ Partida* leerPartida(int ID) {
         sqlite3_finalize(stmt);
         return partida;
     } else {
-				qlite3_finalize(stmt);
+				sqlite3_finalize(stmt);
         return NULL;
     }
 }

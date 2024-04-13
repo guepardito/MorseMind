@@ -11,16 +11,23 @@ void conectarBaseDeDatos() {
         fprintf(stderr, "Error al abrir la base de datos: %s\n", sqlite3_errmsg(db));
         exit(1);
     }
+    sqlite3_exec(db, "DROP DATABASE IF EXISTS database;", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE DATABASE database CHARACTER SET UTF8 COLLATE UTF8_GENERAL_CI;", NULL, NULL, NULL);
+    sqlite3_exec(db, "DROP TABLE IF EXISTS Usuario CASCADE;", NULL, NULL, NULL);
+    sqlite3_exec(db, "DROP TABLE IF EXISTS Partida CASCADE;", NULL, NULL, NULL);
+    sqlite3_exec(db, "DROP TABLE IF EXISTS Palabra CASCADE;", NULL, NULL, NULL);
+    sqlite3_exec(db, "DROP TABLE IF EXISTS Estadisticas CASCADE;", NULL, NULL, NULL);
+    sqlite3_exec(db, "DROP TABLE IF EXISTS Tipo_Morse CASCADE;", NULL, NULL, NULL);
+
+    sqlite3_exec(db, "CREATE TABLE Usuario (ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT, Correo TEXT, NOMBRE TEXT, APELLIDO TEXT, APODO TEXT, CONTRASENYA TEXT, ID_Estadistica INTEGER REFERENCES Estadisticas(ID_Estadistica));", NULL, NULL, NULL);
     
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Usuario (ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT, Correo TEXT, NOMBRE TEXT, APELLIDO TEXT, APODO TEXT, CONTRASENYA TEXT, ID_Estadistica INTEGER REFERENCES Estadisticas(ID_Estadistica));", NULL, NULL, NULL);
-    
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Partida (ID_Partida INTEGER AUTOINCREMENT, Puntuacion INTEGER, Resultado TEXT, Fecha TEXT, Intentos INTEGER, ID_Usuario INTEGER REFERENCES Usuario(ID_Usuario), ID_Morse INTEGER REFERENCES Tipo_Morse(ID_MORSE), ID_Palabra INTEGER REFERENCES Palabra(ID_Palabra), PRIMARY KEY(ID_Partida, ID_Usuario, ID_Morse, ID_Palabra, Fecha));", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Partida (ID_Partida INTEGER AUTOINCREMENT, Puntuacion INTEGER, Resultado TEXT, Fecha TEXT, Intentos INTEGER, ID_Usuario INTEGER REFERENCES Usuario(ID_Usuario), ID_Morse INTEGER REFERENCES Tipo_Morse(ID_MORSE), ID_Palabra INTEGER REFERENCES Palabra(ID_Palabra), PRIMARY KEY(ID_Partida, ID_Usuario, ID_Morse, ID_Palabra, Fecha));", NULL, NULL, NULL);
         
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Palabra (ID_Palabra INTEGER PRIMARY KEY AUTOINCREMENT, PAL_ESP TEXT, PAL_MOR_INT TEXT, PAL_MOR_AM TEXT);", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Palabra (ID_Palabra INTEGER PRIMARY KEY AUTOINCREMENT, PAL_ESP TEXT, PAL_MOR_INT TEXT, PAL_MOR_AM TEXT);", NULL, NULL, NULL);
 
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Estadisticas (ID_Estadistica INTEGER PRIMARY KEY AUTOINCREMENT, Aciertos INTEGER, Fallos INTEGER);", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Estadisticas (ID_Estadistica INTEGER PRIMARY KEY AUTOINCREMENT, Aciertos INTEGER, Fallos INTEGER);", NULL, NULL, NULL);
 
-    sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS Tipo_Morse (ID_Morse INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE_TIPO TEXT);", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Tipo_Morse (ID_Morse INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE_TIPO TEXT);", NULL, NULL, NULL);
 
 }
 
@@ -135,7 +142,7 @@ Usuario* leerUsuario(char* Apodo){
 		}
 
     printf("Peticion SQL preparada (SELECT)\n");
-	sqlite3_bind_text(stmt, 1, Apodo, -1, SQLITE_TRANSIENT);
+	//sqlite3_bind_text(stmt, 1, Apodo, -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Usuario *usuario = malloc(sizeof(Usuario));
@@ -270,7 +277,7 @@ Partida* leerPartida(int ID) {
 		}
 
     printf("Peticion SQL preparada (SELECT)\n");
-		sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);
+	//sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Partida *partida = malloc(sizeof(Partida));
@@ -640,9 +647,8 @@ Estadisticas* leerEstadisticas(int ID) {
 		return result;
 		}
 
-    printf("Peticion SQL preparada (SELECT)\n");
-		sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);
-
+    printf("Peticion SQL preparada (SELECT)\n"); 
+	//sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);  
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         if (!estadistica) {
             printf("No se pudo asignar memoria para el usuario\n");
@@ -781,8 +787,13 @@ char* sortear_n_palabra(int ID)
     }
     sqlite3_finalize(stmt);
 
-	char sql = "SELECT ID_Palabra, Pal_Esp, Pal_Mor_Int, Pal_Mor_Am FROM Palabra WHERE ID_Palabra NOT IN (SELECT ID_Palabra FROM Partida WHERE ID_Usuario = ?)";
-    result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    const char *sql2 = "SELECT ID_Palabra, Pal_Esp, Pal_Mor_Int, Pal_Mor_Am FROM Palabra WHERE ID_Palabra NOT IN (SELECT ID_Palabra FROM Partida WHERE ID_Usuario = ?)"; //no :)
+    result = sqlite3_prepare_v2(db, sql2, -1, &stmt, NULL);
+    if (result != SQLITE_OK) { 
+        printf("Error en preparación SQL: %s\n", sqlite3_errmsg(db));
+        return NULL;
+    }
+
     sqlite3_bind_int(stmt, 1, ID);
 
     Palabra *nueva_palabra = NULL;
@@ -790,7 +801,7 @@ char* sortear_n_palabra(int ID)
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         nueva_palabra = malloc(sizeof(Palabra));
         if (!nueva_palabra) {
-            printf("Error\n");
+            printf("Error de asignación de memoria\n");
             sqlite3_finalize(stmt);
             return NULL;
         }
@@ -831,9 +842,9 @@ int cargar_datos()
         char *pal_mor_int = strtok(NULL, ",");
         char *pal_mor_am = strtok(NULL, "\n");
 
-        sqlite3_bind_text(stmt, 1, pal_esp, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, pal_mor_int, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 3, pal_mor_am, -1, SQLITE_TRANSIENT);
+        //sqlite3_bind_text(stmt, 1, pal_esp, -1, SQLITE_TRANSIENT);
+        //sqlite3_bind_text(stmt, 2, pal_mor_int, -1, SQLITE_TRANSIENT);
+        //sqlite3_bind_text(stmt, 3, pal_mor_am, -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
             fprintf(stderr, "No se pudo insertar la data: %s\n", sqlite3_errmsg(db));

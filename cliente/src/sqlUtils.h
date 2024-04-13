@@ -7,7 +7,7 @@ typedef struct {
     char* Nombre;
     char* Apellido;
     char* Apodo;
-    char* Contraseña;
+    char* Contrasenya;
 } Usuario;
 
 typedef struct {

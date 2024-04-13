@@ -804,3 +804,45 @@ char* sortear_n_palabra(int ID)
     sqlite3_finalize(stmt);
     return nueva_palabra->Pal_Esp;
 }
+
+int cargar_datos()
+{
+    FILE *file = fopen("Traducciones/palabras_traducidas_sep.txt", "r");
+    if (!file) {
+        printf("No se ha podido abrir el archivo.\n");
+        return 1;
+    }
+
+    char linea[1024];
+    sqlite3_stmt *stmt;
+    const char *sql = "INSERT INTO Palabras (Pal_Esp, Pal_Mor_Int, Pal_Mor_Am) VALUES (?, ?, ?)";
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
+        printf("No se ha podido escribir el codigo SQL: %s\n", sqlite3_errmsg(db));
+        fclose(file);
+        return 1;
+    }
+
+    // Leer el archivo y omitir la primera línea (encabezados)
+    fgets(linea, 1024, file);
+
+    while (fgets(linea, 1024, file)) {
+        char *pal_esp = strtok(linea, ",");
+        char *pal_mor_int = strtok(NULL, ",");
+        char *pal_mor_am = strtok(NULL, "\n");
+
+        sqlite3_bind_text(stmt, 1, pal_esp, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, pal_mor_int, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, pal_mor_am, -1, SQLITE_TRANSIENT);
+
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            fprintf(stderr, "No se pudo insertar la data: %s\n", sqlite3_errmsg(db));
+        }
+
+        sqlite3_reset(stmt);
+    }
+
+    sqlite3_finalize(stmt);
+    fclose(file);
+    return 0;   
+}

@@ -1,9 +1,18 @@
 #include <stdio.h>
 #include "pantallas.h"
-#include <stdlib.h>
+#include "sqlUtils.h"
 
 
 int main(void)
 {
-  pantalla1();
+  conectarBaseDeDatos();
+  Tipo_Morse i;
+  i.Nombre_Tipo = "Internacional";
+  Tipo_Morse a;
+  a.Nombre_Tipo = "Americano";
+  crearTipoMorse(i);
+  crearTipoMorse(a);
+
+  desconectarBaseDeDatos();
+  //pantalla1();
 }

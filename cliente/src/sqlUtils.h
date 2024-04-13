@@ -8,6 +8,7 @@ typedef struct {
     char* Apellido;
     char* Apodo;
     char* Contrasenya;
+    int ID_Estadistica;
 } Usuario;
 
 typedef struct {
@@ -46,34 +47,31 @@ void conectarBaseDeDatos();
 void desconectarBaseDeDatos();
 
 // Funciones CRUD para la estructura Usuario
-void crearUsuario(Usuario nuevoUsuario);
-Usuario* leerUsuario(int ID);
-void actualizarUsuario(int ID, Usuario datosActualizados);
-void eliminarUsuario(int ID);
+int crearUsuario(Usuario nuevoUsuario);
+Usuario* leerUsuario(char* Apodo);
 
 // Funciones CRUD para la estructura Partida
 void crearPartida(Partida nuevaPartida);
 Partida* leerPartida(int ID);
-void actualizarPartida(int ID, Partida datosActualizados);
-void eliminarPartida(int ID);
 
 // Funciones CRUD para la estructura Palabra
 void crearPalabra(Palabra nuevaPalabra);
-Palabra* leerPalabra(int ID);
+int leerPalabra(char* Palabra);
 void actualizarPalabra(int ID, Palabra datosActualizados);
 void eliminarPalabra(int ID);
 
 // Funciones CRUD para la estructura Tpo_Morse
 void crearTipoMorse(Tipo_Morse nuevoTipoMorse);
 Tipo_Morse* leerTipoMorse(int ID);
-void actualizarTipoMorse(int ID, Tipo_Morse datosActualizados);
-void eliminarTipoMorse(int ID);
+
 
 // Funciones CRUD para la estructura Estadisticas
 void crearEstadisticas(Estadisticas nuevasEstadisticas);
 Estadisticas* leerEstadisticas(int ID);
 void actualizarEstadisticas(int ID, Estadisticas datosActualizados);
 void eliminarEstadisticas(int ID);
+
+char* sortear_n_palabra(int ID); //se pasa el ID de usuario
 
 
 #endif

@@ -21,7 +21,7 @@ void conectarBaseDeDatos() {
 
     sqlite3_exec(db, "CREATE TABLE Usuario (ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT, Correo TEXT, NOMBRE TEXT, APELLIDO TEXT, APODO TEXT, CONTRASENYA TEXT, ID_Estadistica INTEGER REFERENCES Estadisticas(ID_Estadistica));", NULL, NULL, NULL);
     
-    sqlite3_exec(db, "CREATE TABLE Partida (ID_Partida INTEGER AUTOINCREMENT, Puntuacion INTEGER, Resultado TEXT, Fecha TEXT, Intentos INTEGER, ID_Usuario INTEGER REFERENCES Usuario(ID_Usuario), ID_Morse INTEGER REFERENCES Tipo_Morse(ID_MORSE), ID_Palabra INTEGER REFERENCES Palabra(ID_Palabra), PRIMARY KEY(ID_Partida, ID_Usuario, ID_Morse, ID_Palabra, Fecha));", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Partida (ID_Partida INTEGER PRIMARY KEY AUTOINCREMENT, Puntuacion INTEGER, Resultado TEXT, Fecha TEXT, Intentos INTEGER, ID_Usuario INTEGER REFERENCES Usuario(ID_Usuario), ID_Morse INTEGER REFERENCES Tipo_Morse(ID_MORSE), ID_Palabra INTEGER REFERENCES Palabra(ID_Palabra));", NULL, NULL, NULL);
         
     sqlite3_exec(db, "CREATE TABLE Palabra (ID_Palabra INTEGER PRIMARY KEY AUTOINCREMENT, PAL_ESP TEXT, PAL_MOR_INT TEXT, PAL_MOR_AM TEXT);", NULL, NULL, NULL);
 
@@ -142,7 +142,7 @@ Usuario* leerUsuario(char* Apodo){
 		}
 
     printf("Peticion SQL preparada (SELECT)\n");
-	//sqlite3_bind_text(stmt, 1, Apodo, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(stmt, 1, Apodo, -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Usuario *usuario = malloc(sizeof(Usuario));
@@ -277,7 +277,7 @@ Partida* leerPartida(int ID) {
 		}
 
     printf("Peticion SQL preparada (SELECT)\n");
-	//sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Partida *partida = malloc(sizeof(Partida));
@@ -648,7 +648,7 @@ Estadisticas* leerEstadisticas(int ID) {
 		}
 
     printf("Peticion SQL preparada (SELECT)\n"); 
-	//sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);  
+	sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);  
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         if (!estadistica) {
             printf("No se pudo asignar memoria para el usuario\n");
@@ -842,9 +842,9 @@ int cargar_datos()
         char *pal_mor_int = strtok(NULL, ",");
         char *pal_mor_am = strtok(NULL, "\n");
 
-        //sqlite3_bind_text(stmt, 1, pal_esp, -1, SQLITE_TRANSIENT);
-        //sqlite3_bind_text(stmt, 2, pal_mor_int, -1, SQLITE_TRANSIENT);
-        //sqlite3_bind_text(stmt, 3, pal_mor_am, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 1, pal_esp, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, pal_mor_int, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, pal_mor_am, -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
             fprintf(stderr, "No se pudo insertar la data: %s\n", sqlite3_errmsg(db));

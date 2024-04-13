@@ -12,7 +12,7 @@ int main(void)
   a.Nombre_Tipo = "Americano";
   crearTipoMorse(i);
   crearTipoMorse(a);
-
+  pantalla1();
   desconectarBaseDeDatos();
-  //pantalla1();
+  
 }

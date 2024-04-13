@@ -5,7 +5,7 @@
 #include "utils.h"
 #include <ctype.h>
 #include "sqlUtils.h"
-#include <sqlite3.h>
+#include "sqlite3.h"
 #include "time.h"
 
 

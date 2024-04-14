@@ -8,7 +8,6 @@
 #include "sqlite3.h"
 #include "time.h"
 
-
 char* palabras_usadas[7];
 char letras_conocidas[15];
 char pista[5];
@@ -680,9 +679,9 @@ void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu)
     
 
 
-    char opc;
+    char opc[2];
     printf("Introduzca la opcion deseada:");
-    opc=
+    scanf("%s", opc);
     if(puntuacion!=0){ // importante que sea diferente de 0 -Nora
          //almacenar puntuacion de partida
     }
@@ -726,12 +725,15 @@ void pantalla41(char *nick, Usuario *usu)
 {
     Estadisticas *misEstadisticas= leerEstadisticas((*usu).ID_Estadistica);
 
-    if ((*misEstadisticas).Aciertos == NULL || (*misEstadisticas).fallos == NULL)
+    if ((*misEstadisticas).Aciertos == NULL && (*misEstadisticas).fallos == NULL)
     {
         free(misEstadisticas);
         misEstadisticas=NULL;
+        printf("\nNo tienes estadisticas disponibles para exportar, juega antes de intentarlo de nuevo!\n");
+        printf("Pulsa cualquier tecla para continuar: ");
+        char opc[2];
+        scanf("%s", opc);
         pantalla4(nick, usu);
-        return;
     }
     
     int total = (*misEstadisticas).Aciertos + (*misEstadisticas).fallos;
@@ -741,10 +743,9 @@ void pantalla41(char *nick, Usuario *usu)
     logo();
     printf("         T U S  E S T A D I S T I C A S          \n");
     printf("=================================================\n\n");
-    printf("Porcentaje de aciertos: %i\n", (*misEstadisticas).Aciertos/total*100);
+    printf("Porcentaje de aciertos: %i%%\n", (*misEstadisticas).Aciertos/total*100);
     printf("Numero de partidas jugadas: %i\n\n", total);
     
-
     printf("Opciones:\n");
     printf("1. Exportar mis estadisticas a fichero\n");
     printf("2. Atras\n");
@@ -753,18 +754,12 @@ void pantalla41(char *nick, Usuario *usu)
     scanf("%s", opc);
     if (*opc == '1')
     {
-        printf("el ID_ESTADISTICA ES: %i\n", (*usu).ID_Estadistica);
-        if (misEstadisticas!=NULL){ 
-            exportarEstadisticas(porcentaje, total);
-            free(misEstadisticas);
-            misEstadisticas=NULL;
-            
-            printf("Ya se han exportado tus datos al fichero! Muchas gracias! \nIntroduce cualquier letra para continuar: ");
-            scanf("%s", opc);
-        } else
-        {
-            printf("No tienes estadisticas disponibles para exportar, juega antes de intentarlo de nuevo!");
-        }
+        exportarEstadisticas(porcentaje, total);
+        free(misEstadisticas);
+        misEstadisticas=NULL;
+        
+        printf("Ya se han exportado tus datos al fichero! Muchas gracias! \nIntroduce cualquier letra para continuar: ");
+        scanf("%s", opc);
         
         pantalla63(41, nick, usu);
     }
@@ -787,34 +782,14 @@ void pantalla5(char *nick, Usuario *usu)
     char opc[2];
     printf("Para ir atras pulsa 1: ");
     scanf("%s", opc);
+    fflush(stdin);
     if (*opc == '1')
     {
         pantalla2(nick, usu);
     }
 }
-/*
-void pantalla61(int pantalla)
-{
-    system("cls");
-    logo();
-    printf("                  A V I S O !                    \n");
-    printf("=================================================\n\n");
-    printf("Seguro que quieres volver atras?\n");
-    printf("1. Si\n");
-    printf("2. No\n");
-    char opc[2];
-    printf("Introduzca la opcion deseada:");
-    scanf("%s", opc);
-    if (*opc == '1')
-    {
-        //no se que va aqui
-    }
-    else if (*opc == '2')
-    {
-         //no se que va aqui
-    }
-}
-*/
+
+
 void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida *nuevaPartida, Usuario *usu, char* adivinanza)
 {
     system("cls");
@@ -828,22 +803,18 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
+    fflush(stdin);
     if (*opc == '1')
     {
         puntuacion=-10;
-        //guardar_puntuacion_en_archivo(nick, puntuacion);
-        //(*nuevaPartida).ID_Usuario = (*usu).ID_Usuario;
-        //(*nuevaPartida).Intentos= intentos_restantes;
-        //(*nuevaPartida).Puntuacion= puntuacion;  
-        //(*nuevaPartida).Resultado= "renunciado";
+        nuevaPartida->Resultado = "rendid";
+        nuevaPartida->Intentos = intentos_restantes;
+        nuevaPartida->Puntuacion = puntuacion;
         
         actualizarPartida((*nuevaPartida).ID_Partida, *nuevaPartida);
         
         Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
 
-        printf("ACIERTOS: %i\n", estadisActuales->Aciertos);
-        printf("FALLOS: %i\n", estadisActuales->fallos);
-        printf("ID ESTADISTICA: %i\n", estadisActuales->ID_Estadistica);
         int fallos = (*estadisActuales).fallos;
         (*estadisActuales).fallos= fallos + 1;
         
@@ -856,7 +827,7 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         pantalla2(nick, usu);
     }
 
-    else if (*opc == '2')
+    else if (opc == '2')
     {   
         system("cls");
          pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
@@ -875,6 +846,7 @@ void pantalla63(int pantalla, char *nick, Usuario *usu)
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
+    fflush(stdin);
     if (*opc == '1')
     {   if(pantalla == 32 | pantalla == 4 | pantalla==41){
             pantalla2(nick, usu);
@@ -907,6 +879,7 @@ void pantalla65(int pantalla, char *nick, Usuario *usu)
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
+    fflush(stdin);
     if (*opc == '1')
     {   if (pantalla==2){
             free(usu);
@@ -921,9 +894,6 @@ void pantalla65(int pantalla, char *nick, Usuario *usu)
         }
     }
 }
-
-
-
 
 
 

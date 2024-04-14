@@ -768,10 +768,10 @@ Estadisticas* leerEstadisticas(int ID) {
 		return NULL;
 		}
 
-    printf("Peticion SQL preparada (SELECT)\n");
+    //printf("Peticion SQL preparada (SELECT)\n");
     int intID = (int)ID;
 	sqlite3_bind_int(stmt, 1, intID);
-    printf("Imprime esto\n");
+    //printf("Imprime esto\n");
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Estadisticas *estadistica = malloc(sizeof(Estadisticas));
         if (estadistica == NULL) {
@@ -785,7 +785,7 @@ Estadisticas* leerEstadisticas(int ID) {
         estadistica->fallos = sqlite3_column_int(stmt, 2);
 
         sqlite3_finalize(stmt);
-        printf("Peticion SQL finalizada correctamente (SELECT)\n");
+        //printf("Peticion SQL finalizada correctamente (SELECT)\n");
         return estadistica;
     } else {
         printf("No hay ID %d\n", ID);
@@ -992,7 +992,7 @@ int cargar_datos()
 
 void hacerYImprimirRankings() {
     sqlite3_stmt *stmt;
-    const char *sql = "SELECT Usuario.Apodo, Estadisticas.Aciertos, Estadisticas.fallos FROM Usuario JOIN Estadisticas ON Estadisticas.ID_Estadistica = Usuario.ID_Estadistica";
+    const char *sql = "SELECT u.Apodo, SUM(p.Puntuacion) AS Total_Puntuacion FROM Usuario u JOIN Partida p ON u.ID_Usuario = p.ID_Usuario GROUP BY u.ID_Usuario ORDER BY Total_Puntuacion DESC";
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
         printf("Error en el stmt: %s\n", sqlite3_errmsg(db));
@@ -1003,25 +1003,15 @@ void hacerYImprimirRankings() {
     int cant_users = 0;
 
     while (sqlite3_step(stmt) == SQLITE_ROW && cant_users < 500) {
-        strncpy(rank[cant_users].apodo, (char *)sqlite3_column_text(stmt, 0), sizeof(rank[cant_users].apodo) - 1);
-        int aciertos = sqlite3_column_int(stmt, 1);
-        int fallos = sqlite3_column_int(stmt, 2);
-        rank[cant_users].puntuacion = aciertos - fallos;
+        const char *nombre = (const char *)sqlite3_column_text(stmt, 0);
+        int total_puntuacion = sqlite3_column_int(stmt, 1);
+        strncpy(rank[cant_users].apodo, nombre, sizeof(rank[cant_users].apodo) - 1);
+        rank[cant_users].apodo[sizeof(rank[cant_users].apodo) - 1] = '\0';
+        rank[cant_users].puntuacion = total_puntuacion;
         cant_users++;
     }
 
     sqlite3_finalize(stmt);
-
-  
-    for (int i = 0; i < cant_users - 1; i++) {
-        for (int j = 0; j < cant_users - i - 1; j++) {
-            if (rank[j].puntuacion < rank[j + 1].puntuacion) {
-                Ranking temp = rank[j];
-                rank[j] = rank[j + 1];
-                rank[j + 1] = temp;
-            }
-        }
-    }
 
 
     printf("Los Top:\n");
@@ -1032,23 +1022,32 @@ void hacerYImprimirRankings() {
 
 void obtenerTraducciones(char *nick, Usuario *usu)
 {   
-    int ID_Usu = (*usu).ID_Usuario;
+    int ID_Usu = usu->ID_Usuario;
     sqlite3_stmt *stmt;
-    char sql[] = "SELECT p.Pal_Esp, p.Pal_Mor_Int, p.Pal_Mor_Am FROM Palabra p JOIN Partida pa ON p.ID_Palabra = pa.ID_Palabra WHERE pa.ID_Usuario = ?";
+    const char *sql = "SELECT p.Pal_Esp, p.Pal_Mor_Int, p.Pal_Mor_Am FROM Palabra p JOIN Partida pa ON p.ID_Palabra = pa.ID_Palabra WHERE pa.ID_Usuario = ?";
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
         printf("Error preparando el stmt: %s\n", sqlite3_errmsg(db));
         return;
     }
 
-    sqlite3_bind_int(stmt, 1, ID_Usu);
-    printf("Usuario: %s\n", *nick);
+    if (sqlite3_bind_int(stmt, 1, ID_Usu) != SQLITE_OK) {
+        printf("Error en el bind: %s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    printf("Usuario: %s\n", nick);
     printf("Palabras usadas en la partida:\n");
     printf("==============================\n");
+
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        printf("Esp: %s ", sqlite3_column_text(stmt, 0));
-        printf("Morse Int: %s ", sqlite3_column_text(stmt, 1));
-        printf("Morse Ame: %s\n", sqlite3_column_text(stmt, 2));
+        const char *palEsp = (const char *)sqlite3_column_text(stmt, 0);
+        const char *morInt = (const char *)sqlite3_column_text(stmt, 1);
+        const char *morAme = (const char *)sqlite3_column_text(stmt, 2);
+        printf("Esp: %s ", palEsp);
+        printf("Morse Int: %s ", morInt);
+        printf("Morse Ame: %s\n", morAme);
     }
 
     if (sqlite3_finalize(stmt) != SQLITE_OK) {

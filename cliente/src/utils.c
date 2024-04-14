@@ -1,3 +1,4 @@
+
 #include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +20,7 @@ void exportarEstadisticas(float porcentaje, int partidas){
     }
     fprintf(f, "         T U S  E S T A D I S T I C A S          \n");
     fprintf(f, "=================================================\n\n");
-    fprintf(f, "Porcentaje de aciertos: %.2f\n", porcentaje);
+    fprintf(f, "Porcentaje de aciertos: %.2f%%\n", porcentaje);
     fprintf(f, "Numero de partidas jugadas: %i\n", partidas);
 
     //fprintf(f, "Media de intentos: %.2f\n", media);

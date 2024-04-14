@@ -75,7 +75,7 @@ void pantalla11()
     printf("Nickname: ");
     scanf("%s", nick);
 
-    char correo[20];
+    char correo[40];
     printf("Correo: ");
     scanf("%s", correo);
 
@@ -402,52 +402,6 @@ typedef struct{
         int puntuacion;
     } Registro;
 
-/*
-void guardar_puntuacion_en_archivo(char *nick, int puntuacion) {
-    FILE *archivo;
-    archivo = fopen("Ranking/ranking.txt", "a"); // Abre el archivo en modo de apéndice
-
-    if (archivo == NULL) {
-        printf("Error al abrir el archivo.\n");
-        return;
-    }
-
-   Registro ranking[500]; // Se asume un máximo de 500 registros
-    int num_registros = 0;
-
-    // Leer los datos existentes del archivo
-    while (fscanf(archivo, "%s %d", ranking[num_registros].nick, &ranking[num_registros].puntuacion) == 2) {
-        num_registros++;
-    }
-
-    // Agregar el nuevo dato
-    strcpy(ranking[num_registros].nick, nick);
-    ranking[num_registros].puntuacion = puntuacion;
-    num_registros++;
-
-    // Ordenar los registros según la puntuación de mayor a menor
-    for (int i = 0; i < num_registros - 1; i++) {
-        for (int j = 0; j < num_registros - i - 1; j++) {
-            if (ranking[j].puntuacion < ranking[j + 1].puntuacion) {
-                // Intercambiar los registros
-                Registro temp = ranking[j];
-                ranking[j] = ranking[j + 1];
-                ranking[j + 1] = temp;
-            }
-        }
-    }
-
-    // Regresar al inicio del archivo
-    rewind(archivo);
-
-    // Escribir los datos ordenados en el archivo
-    for (int i = 0; i < num_registros; i++) {
-        fprintf(archivo, "%s %d\n", ranking[i].nick, ranking[i].puntuacion);
-    }
-
-    // Cerrar el archivo
-    fclose(archivo);
-}*/
 
 void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida *nuevaPartida, Usuario *usu, char* adivinanza)
 {   
@@ -457,8 +411,9 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
         int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);
         display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); //añadir aqui las pistas y las letras acertadas 
         char opc[2];
+        /*PRINT AYUDA
         printf("morse: %i\n", nuevaPartida->ID_Morse);
-        printf("idPalabra: %i\n", nuevaPartida->ID_Palabra);
+        printf("idPalabra: %i\n", nuevaPartida->ID_Palabra);*/
         printf("Introduzca la opcion deseada:");
         scanf("%s", opc);
         if (*opc == '1')
@@ -526,8 +481,6 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                     printf("Parece que te has quedado sin intentos, es una pena!\n");
                     puntuacion=-10;
                     printf("Puntuacion: %i\n", puntuacion);
-
-                    //guardar_puntuacion_en_archivo(nick, puntuacion);
 
                     (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
                     (*nuevaPartida).Intentos= intentos_restantes;

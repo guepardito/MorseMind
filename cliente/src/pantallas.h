@@ -14,7 +14,7 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
 void pantalla3(char* nick, int intentos_restantes,char** palabras_usadas, char* letras_conocidas, char*pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida *nuevapartida, Usuario *usu, char* adivinanza);
 void pantalla4(char *nick, Usuario *usu);
 void pantalla41(char *nick, Usuario *usu);
-void pantalla5(char *nick, Usuario *usu);
+void pantalla5(char *nick, Usuario *usu);  
 void pantalla61();
 void pantalla62(char* nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida *nuevaPartida, Usuario *usu, char* adivinanza);
 void pantalla63(int pantalla, char *nick, Usuario *usu);
@@ -22,9 +22,9 @@ void pantalla64();
 void pantalla65(int pantalla, char* nick, Usuario *usu);
 
 char* sortear_palabra(int ID_usuario);
-void mostrar_palabra_LEDS(char* adivinanza, char** alfabeto); //por ahora solo imprime por pantalla
+void mostrar_palabra_LEDS(char* adivinanza, char** alfabeto);
 char** crearAlfabeto(char *fichero, char** alfabeto);
-void guardarPuntuacion(int puntuacion); //deberia guardarla en un fichero, ahora imprime por pantalla
+void guardarPuntuacion(int puntuacion);
 
 
 #endif

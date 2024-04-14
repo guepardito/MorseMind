@@ -15,7 +15,7 @@ int main(void)
   t.Nombre_Tipo = "Internacional";
 
   crearTipoMorse(t);
-  /*
+  
   Partida p;
   Usuario usu;
   usu.Nombre = "hai";
@@ -28,7 +28,6 @@ int main(void)
   Usuario *usu2;
   crearUsuario(usu);
   usu2 = leerUsuario("dsf");
-  printf("ZORRA: %s", usu2->ID_Usuario);
 
   p.Fecha = "JD";
   p.ID_Morse= 1;
@@ -39,18 +38,23 @@ int main(void)
   p.Puntuacion=456;
   p.Resultado="acertado";
   
-  /*
+  
+
   crearPartida(p);
   //printf("AAAAAAAAAAA\n");
+
+  p.Puntuacion=2;
+  actualizarPartida(p.ID_Partida, p);
+  printf("Punt2 %i\n", p.Puntuacion);
   Partida *p2;
+  Partida *p3;
   //printf("Punt %i\n", (p).Puntuacion);
   p2 = leerPartida(p.ID_Partida);
-  printf("JNJB");
-  if(p2 = NULL){
-    printf("%s", "funca");
-  }
-  //printf("Punt2 %i\n", (*p2).Puntuacion);
-  */
+
+  
+
+  printf("Punt2 %i\n", (*p2).Puntuacion);
+  
   desconectarBaseDeDatos();
   
 }

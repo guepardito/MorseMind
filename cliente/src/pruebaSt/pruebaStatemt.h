@@ -1,12 +1,6 @@
 #ifndef _SQL_UTILS_H_
 #define _SQL_UTILS_H_
 
-#include "pruebaStatemt.h"
-#include "sqlite3.h"
-#include "stdlib.h"
-#include <stdio.h>
-#include "string.h"
-
 typedef struct {
     int ID_Usuario;
     char* Correo;
@@ -73,7 +67,7 @@ Tipo_Morse* leerTipoMorse(int ID);
 
 
 // Funciones CRUD para la estructura Estadisticas
-void crearEstadisticas(Estadisticas nuevasEstadisticas);
+int crearEstadisticas(Estadisticas nuevasEstadisticas);
 Estadisticas* leerEstadisticas(int ID);
 void actualizarEstadisticas(int ID, Estadisticas datosActualizados);
 void eliminarEstadisticas(int ID);

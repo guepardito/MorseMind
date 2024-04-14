@@ -21,9 +21,9 @@ void conectarBaseDeDatos() {
     sqlite3_exec(db, "DROP TABLE IF EXISTS Estadisticas CASCADE;", NULL, NULL, NULL);
     sqlite3_exec(db, "DROP TABLE IF EXISTS Tipo_Morse CASCADE;", NULL, NULL, NULL);
 
-    sqlite3_exec(db, "CREATE TABLE Tipo_Morse (ID_Morse INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE_TIPO TEXT);", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Tipo_Morse (ID_Morse INTEGER PRIMARY KEY, NOMBRE_TIPO TEXT);", NULL, NULL, NULL);
 
-    sqlite3_exec(db, "CREATE TABLE Palabra (ID_Palabra INTEGER PRIMARY KEY AUTOINCREMENT, PAL_ESP TEXT, PAL_MOR_INT TEXT, PAL_MOR_AM TEXT);", NULL, NULL, NULL);
+    sqlite3_exec(db, "CREATE TABLE Palabra (ID_Palabra INTEGER PRIMARY KEY, PAL_ESP TEXT, PAL_MOR_INT TEXT, PAL_MOR_AM TEXT);", NULL, NULL, NULL);
 
     sqlite3_exec(db, "CREATE TABLE Estadisticas (ID_Estadistica INTEGER PRIMARY KEY AUTOINCREMENT, Aciertos INTEGER, Fallos INTEGER);", NULL, NULL, NULL);
 
@@ -284,16 +284,17 @@ Partida* leerPartida(int ID) {
 	sqlite3_stmt *stmt;
     char sql[] = "select ID_Partida, Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra from Partida where ID_Partida = ?";
     
-    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
+    int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ; //strlen(sql) + 1
     
     if (result != SQLITE_OK) {
 		printf("Error en el statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result;
-		}
+	}
 
     printf("Peticion SQL preparada (SELECT)\n");
-	sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);
+
+    result = sqlite3_bind_int(stmt, 1, ID);
 
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Partida *partida = malloc(sizeof(Partida));
@@ -314,7 +315,9 @@ Partida* leerPartida(int ID) {
         sqlite3_finalize(stmt);
         printf("Statement finalizado correctamente (SELECT)");
         return partida;
+        
     } else {
+        printf("ERROR en el statement (SELECT)\n");
 		sqlite3_finalize(stmt);
         return NULL;
     }
@@ -322,7 +325,7 @@ Partida* leerPartida(int ID) {
 
 void actualizarPartida(int ID, Partida datosActualizados)
 {
-    sqlite3_stmt *stmt;
+    /*sqlite3_stmt *stmt;
 
     char sql[] = "UPDATE Partida SET Puntuacion = ?, Resultado = ?, Fecha = ?, Intentos = ?, ID_Usuario = ?, ID_Morse = ?, ID_Palabra = ? WHERE ID_Partida = ?";
 
@@ -353,9 +356,95 @@ void actualizarPartida(int ID, Partida datosActualizados)
     if (result != SQLITE_OK) {
         printf("Error finalizando el (UPDATE) %s\n", sqlite3_errmsg(db));
         return;
+    }*//*
+
+    sqlite3_stmt *stmt;
+
+    char sql[] = "UPDATE Partida SET Puntuacion = ?, Resultado = ?, Fecha = ?, Intentos = ?, ID_Usuario = ?, ID_Morse = ?, ID_Palabra = ? WHERE ID_Partida = ?";    
+
+    int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (result != SQLITE_OK) {
+        printf("Error preparando el statement (UPDATE)\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        return;
     }
-                        
+
+    result = sqlite3_bind_int(stmt, 1, datosActualizados.Puntuacion);
+    if (result != SQLITE_OK) {
+        printf("Error vinculando Puntuacion\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_bind_text(stmt, 2, datosActualizados.Resultado,  -1, SQLITE_TRANSIENT);//strlen(datosActualizados.Resultado), SQLITE_STATIC
+    if (result != SQLITE_OK) {
+        printf("Error vinculando Resultado\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_bind_text(stmt, 3, datosActualizados.Fecha,  -1, SQLITE_TRANSIENT); //strlen(datosActualizados.Fecha), SQLITE_STATIC
+    if (result != SQLITE_OK) {
+        printf("Error vinculando Fecha\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+        //Puntuacion, resultado, fecha, intentos, id_usuario, id_morse,id_palabra
+    result = sqlite3_bind_int(stmt, 4, datosActualizados.Intentos);
+    if (result != SQLITE_OK) {
+        printf("Error vinculando Intentos\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_bind_int(stmt, 5, datosActualizados.ID_Usuario);
+    if (result != SQLITE_OK) {
+        printf("Error vinculando ID_Usuario\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_bind_int(stmt, 6, datosActualizados.ID_Morse);
+    if (result != SQLITE_OK) {
+        printf("Error vinculando ID_Morse\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_bind_int(stmt, 7, datosActualizados.ID_Palabra);
+    if (result != SQLITE_OK) {
+        printf("Error vinculando ID_Palabra\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_step(stmt);
+    if (result != SQLITE_DONE) {
+        printf("Error actualizando las Palabra\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return;
+    }
+
+    result = sqlite3_finalize(stmt);
+    if (result != SQLITE_OK) {
+        printf("Error al finalizar el statement (UPDATE)\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        return;
+    }
+    printf("Partida actualizada correctamente (UPDATE)\n");
+    */
+    
 }
+                    
 
 
 // Funciones CRUD para la estructura PALABRA
@@ -363,7 +452,7 @@ void crearPalabra(Palabra nuevaPalabra){
     
     sqlite3_stmt *stmt;
     
-    char sql[] = "insert into Palabra (PAL_ESP, PAL_MOR_INT, PAL_MOR_AM) values (?, ?, ?)";
+    char sql[] = "insert into Palabra (ID_Palabra PAL_ESP, PAL_MOR_INT, PAL_MOR_AM) values (?, ?, ?, ?)";
 	
     //Prepara la sentencia SQL
     int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
@@ -378,8 +467,11 @@ void crearPalabra(Palabra nuevaPalabra){
     printf("Peticion SQL preparada (INSERTAR)\n");
 
     //Preparamos cada valor de nuevaPalabra en la BD
+    // ID
+    result = sqlite3_bind_int(stmt, 1, nuevaPalabra.ID_Palabra);
+
     //Pal_Esp
-	result = sqlite3_bind_text(stmt, 1, nuevaPalabra.Pal_Esp, sizeof(nuevaPalabra.Pal_Esp), SQLITE_STATIC);
+	result = sqlite3_bind_text(stmt, 2, nuevaPalabra.Pal_Esp, sizeof(nuevaPalabra.Pal_Esp), SQLITE_STATIC);
 	if (result != SQLITE_OK) {
 		printf("Error insertando parametros\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -387,7 +479,7 @@ void crearPalabra(Palabra nuevaPalabra){
 	}
 
     //Pal_mor_int
-    result = sqlite3_bind_text(stmt, 2, nuevaPalabra.Pal_Mor_Int, sizeof(nuevaPalabra.Pal_Mor_Int), SQLITE_STATIC);
+    result = sqlite3_bind_text(stmt, 3, nuevaPalabra.Pal_Mor_Int, sizeof(nuevaPalabra.Pal_Mor_Int), SQLITE_STATIC);
 	if (result != SQLITE_OK) {
 		printf("Error insertando parametros\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -395,7 +487,7 @@ void crearPalabra(Palabra nuevaPalabra){
 	}
 
     //Pal_Mor_Am
-    result = sqlite3_bind_text(stmt, 3, nuevaPalabra.Pal_Mor_Am, strlen(nuevaPalabra.Pal_Mor_Am), SQLITE_STATIC);
+    result = sqlite3_bind_text(stmt, 4, nuevaPalabra.Pal_Mor_Am, strlen(nuevaPalabra.Pal_Mor_Am), SQLITE_STATIC);
 	if (result != SQLITE_OK) {
 		printf("Error insertando parametros\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -422,6 +514,7 @@ void crearPalabra(Palabra nuevaPalabra){
 	return SQLITE_OK;
     
 }
+
 int leerPalabra(char* palabra){
 	sqlite3_stmt *stmt;
     char sql[] = "select ID_Palabra from Palabra where Pal_Esp = ?";
@@ -455,7 +548,7 @@ int leerPalabra(char* palabra){
 void actualizarPalabra(int ID, Palabra datosActualizados){
     sqlite3_stmt *stmt;
 
-    char sql[] = "UPDATE Tipo_Morse SET PAL_ESP = ?, PAL_MOR_INT = ?, PAL_MOR_AM = ?, where ID_Palabra = ?";
+    char sql[] = "UPDATE Tipo_Morse SET PAL_ESP = ?, PAL_MOR_INT = ?, PAL_MOR_AM = ? where ID_Palabra = ?";
     
     int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
     if (result != SQLITE_OK) {
@@ -558,7 +651,7 @@ void eliminarPalabra(int ID){
 void crearTipoMorse(Tipo_Morse nuevoTipoMorse){
     sqlite3_stmt *stmt;
 
-    char sql[] = "insert into Tipo_Morse (NOMBRE_TIPO) values (?)";
+    char sql[] = "insert into Tipo_Morse (ID_MORSE, NOMBRE_TIPO) values (?, ?)";
 
     int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
    
@@ -571,7 +664,8 @@ void crearTipoMorse(Tipo_Morse nuevoTipoMorse){
     printf("Peticion SQL preparada (INSERTAR)\n");
 
     //Preparamos cada valor de nuevoTipoMorse en la BD
-	result = sqlite3_bind_text(stmt, 1, nuevoTipoMorse.Nombre_Tipo, strlen(nuevoTipoMorse.Nombre_Tipo), SQLITE_STATIC);
+    result = sqlite3_bind_int(stmt, 1, nuevoTipoMorse.ID_Morse);
+	result = sqlite3_bind_text(stmt, 2, nuevoTipoMorse.Nombre_Tipo, strlen(nuevoTipoMorse.Nombre_Tipo), SQLITE_STATIC);
 	if (result != SQLITE_OK) {
 		printf("Error insertando parametros\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -690,7 +784,7 @@ int crearEstadisticas(Estadisticas nuevasEstadisticas){
     }
     printf("EL ID DE ESTADISTICA ES: %i\n", id);
 
-	printf("Declarcion finalizada correctamente (INSERTAR)\n");
+	printf("Declaracion finalizada correctamente (INSERTAR)\n");
 
 	return id;
 
@@ -709,9 +803,9 @@ Estadisticas* leerEstadisticas(int ID) {
 		}
 
     printf("Peticion SQL preparada (SELECT)\n");
-    
-	sqlite3_bind_int(stmt, 1, ID);
-
+    int intID = (int)ID;
+	sqlite3_bind_int(stmt, 1, intID);
+    printf("JKNJKIJ\n");
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         Estadisticas *estadistica = malloc(sizeof(Estadisticas));
         if (estadistica == NULL) {
@@ -725,14 +819,14 @@ Estadisticas* leerEstadisticas(int ID) {
         estadistica->fallos = sqlite3_column_int(stmt, 2);
 
         sqlite3_finalize(stmt);
+        printf("Peticion SQL finalizada correctamente (SELECT)\n");
         return estadistica;
     } else {
         printf("No hay ID %d\n", ID);
+        sqlite3_finalize(stmt);
+        return NULL;
     }
 
-    sqlite3_finalize(stmt);
-
-    return NULL;
 }
 
 void actualizarEstadisticas(int ID, Estadisticas datosActualizados){
@@ -786,8 +880,8 @@ void actualizarEstadisticas(int ID, Estadisticas datosActualizados){
         return;
     }
     printf("Estadisticas actualizado correctamente (UPDATE)\n");
-    
 }
+
 void eliminarEstadisticas(int ID){
     sqlite3_stmt *stmt;
 
@@ -897,7 +991,7 @@ int cargar_datos()
 
     char linea[1024];
     sqlite3_stmt *stmt;
-    const char *sql = "INSERT INTO Palabras (Pal_Esp, Pal_Mor_Int, Pal_Mor_Am) VALUES (?, ?, ?)";
+    const char *sql = "INSERT INTO Palabra (ID_Palabra, Pal_Esp, Pal_Mor_Int, Pal_Mor_Am) VALUES (?, ?, ?, ?)";
 
     //sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 
@@ -909,6 +1003,7 @@ int cargar_datos()
 
     fgets(linea, 1024, file);
 
+    int contadorPalabras = 1;
     while (fgets(linea, 1024, file)) {
         char *pal_esp = strtok(linea, ",");
         char *pal_mor_int = strtok(NULL, ",");
@@ -919,15 +1014,18 @@ int cargar_datos()
             continue;
         }        
 
-        sqlite3_bind_text(stmt, 1, pal_esp, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, pal_mor_int, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 3, pal_mor_am, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt, 1, contadorPalabras);
+        sqlite3_bind_text(stmt, 2, pal_esp, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, pal_mor_int, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 4, pal_mor_am, -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
-            fprintf(stderr, "No se pudo insertar la data: %s\n", sqlite3_errmsg(db));
+            // fprintf(stderr, "No se pudo insertar la data: %s\n", sqlite3_errmsg(db));
         }
 
         sqlite3_reset(stmt);
+
+        contadorPalabras++;
     }
 
     sqlite3_finalize(stmt);

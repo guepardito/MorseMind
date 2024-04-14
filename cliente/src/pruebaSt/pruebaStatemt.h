@@ -62,5 +62,7 @@ void eliminarEstadisticas(int ID);
 char* sortear_n_palabra(int ID); //se pasa el ID de usuario
 int cargar_datos();
 
+int leerPalabra(char* palabra);
+void crearPalabra(Palabra nuevaPalabra);
 
 #endif

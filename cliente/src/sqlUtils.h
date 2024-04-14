@@ -43,6 +43,12 @@ typedef struct
   int fallos;
 } Estadisticas;
 
+typedef struct {
+    char apodo[100];
+    int puntuacion;
+} Ranking;
+
+
 void conectarBaseDeDatos();
 void desconectarBaseDeDatos();
 
@@ -74,6 +80,9 @@ void eliminarEstadisticas(int ID);
 
 char* sortear_n_palabra(int ID); //se pasa el ID de usuario
 int cargar_datos();
+void hacerYImprimirRankings();
+
+void obtenerTraducciones(char *nick, Usuario *usu);
 
 
 #endif

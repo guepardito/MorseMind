@@ -37,99 +37,116 @@ void desconectarBaseDeDatos() {
   sqlite3_close(db);
 }
 
-// Funciones CRUD para la estructura PARTIDA
-int crearPartida(Partida nuevaPartida) {
+
+
+// Funciones CRUD para la estructura PALABRA
+void crearPalabra(Palabra nuevaPalabra){
+    
     sqlite3_stmt *stmt;
     
-    char sql[] = "insert into Partida (Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra) values (?, ?, ?, ?, ?, ?, ?)";
+    char sql[] = "insert into Palabra (ID_Palabra PAL_ESP, PAL_MOR_INT, PAL_MOR_AM) values (?, ?, ?, ?)";
 	
-    // Prepara la sentencia SQL
-    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+    //Prepara la sentencia SQL
+    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
     
-    if (result != SQLITE_OK) {
-        printf("Error en el statement (INSERTAR)\n");
-        printf("%s\n", sqlite3_errmsg(db));
-        return result;
-    }
+	if (result != SQLITE_OK) {
+		printf("Error en el statement (INSERTAR)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
 
-    // Prepara los parámetros de la sentencia SQL
-    // ...
+    //Si no hay error se ha preparado correctamente la solicitud
+    printf("Peticion SQL preparada (INSERTAR)\n");
 
-    // Inserta todos los valores preparados
+    //Preparamos cada valor de nuevaPalabra en la BD
+    // ID
+    result = sqlite3_bind_int(stmt, 1, nuevaPalabra.ID_Palabra);
+
+    //Pal_Esp
+	result = sqlite3_bind_text(stmt, 2, nuevaPalabra.Pal_Esp, sizeof(nuevaPalabra.Pal_Esp), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error insertando parametros\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+    //Pal_mor_int
+    result = sqlite3_bind_text(stmt, 3, nuevaPalabra.Pal_Mor_Int, sizeof(nuevaPalabra.Pal_Mor_Int), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error insertando parametros\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+    //Pal_Mor_Am
+    result = sqlite3_bind_text(stmt, 4, nuevaPalabra.Pal_Mor_Am, strlen(nuevaPalabra.Pal_Mor_Am), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error insertando parametros\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+    //Insertamos todos los valores preparados
     result = sqlite3_step(stmt);
     if (result != SQLITE_DONE) {
-        printf("Error insertando los valores en la tabla Partida\n");
+        printf("Error insertando los valores en la tabla Palabra\n");
         sqlite3_finalize(stmt);
-        return result;
+        return;
     }
-    
-    // Obtiene el ID del último registro insertado
-    int last_id = sqlite3_last_insert_rowid(db);
     
     result = sqlite3_finalize(stmt);
     if (result != SQLITE_OK) {
-        printf("Error finalizando la declaración (INSERTAR)\n");
+        printf("Error finalizando la declaracion (INSERT)\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+	printf("Declarcion finalizada correctamente (INSERT)\n");
+
+	return SQLITE_OK;
+    
+}
+
+int leerPalabra(char* palabra) {
+    sqlite3_stmt *stmt;
+    char sql[] = "select ID_Palabra from Palabra where Pal_Esp = ?";
+    
+    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+    
+    if (result != SQLITE_OK) {
+        printf("Error en el statement (SELECT)\n");
         printf("%s\n", sqlite3_errmsg(db));
         return result;
     }
 
-    printf("Declaración finalizada correctamente (INSERTAR)\n");
+    printf("Peticion SQL preparada (SELECT)\n");
 
-    return last_id;
-}
-
-Partida* leerPartida(int ID) {
-    sqlite3_stmt *stmt;
-    char sql[] = "select ID_Partida, Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra from Partida where ID_Partida = ?";
-    
-    int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    
+    // Vincular el parámetro de la palabra
+    result = sqlite3_bind_text(stmt, 1, palabra, strlen(palabra), SQLITE_STATIC);
     if (result != SQLITE_OK) {
-        printf("Error en el statement (SELECT)\n");
-        printf("%s\n", sqlite3_errmsg(db));
-        return NULL;
-    }
-
-    printf("Peticion SQL preparada (SELECT) para ID: %d\n", ID);
-
-    result = sqlite3_bind_int(stmt, 1, ID);
-    if (result != SQLITE_OK) {
-        printf("Error vinculando ID\n");
+        printf("Error vinculando palabra\n");
         printf("%s\n", sqlite3_errmsg(db));
         sqlite3_finalize(stmt);
-        return NULL;
+        return result;
     }
 
-    result = sqlite3_step(stmt);
-    if (result == SQLITE_ROW) {
-        Partida *partida = malloc(sizeof(Partida));
-        if (!partida) {
-            printf("No se pudo asignar memoria para el usuario\n");
-            sqlite3_finalize(stmt);
-            return NULL;
-        }
+    int id_pal = -1;  // Inicializar con un valor predeterminado
 
-        partida->ID_Partida = sqlite3_column_int(stmt, 0);
-        partida->Puntuacion = sqlite3_column_int(stmt, 1);
-        partida->Resultado = strdup((char *)sqlite3_column_text(stmt, 2));
-        partida->Fecha = strdup((char *)sqlite3_column_text(stmt, 3));
-        partida->Intentos = sqlite3_column_int(stmt, 4);
-        partida->ID_Usuario = sqlite3_column_int(stmt, 5);
-        partida->ID_Palabra = sqlite3_column_int(stmt, 6);
-
-        sqlite3_finalize(stmt);
-        printf("Statement finalizado correctamente (SELECT)\n");
-        return partida;
-        
-    } else if (result == SQLITE_DONE) {
-        printf("No hay ID %d\n", ID);
-        sqlite3_finalize(stmt);
-        return NULL;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        id_pal = sqlite3_column_int(stmt, 0);
     } else {
-        printf("Error en el statement (SELECT)\n");
-        printf("%s\n", sqlite3_errmsg(db));
-        sqlite3_finalize(stmt);
-        return NULL;
+        printf("No se encontró la palabra: %s\n", palabra);
     }
-}
 
+    // Finalizar el statement
+    result = sqlite3_finalize(stmt);
+    if (result != SQLITE_OK) {
+        printf("Error finalizando el statement (SELECT)\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        return result;
+    }
+
+    printf("Statement finalizado (SELECT)\n");
+
+    return id_pal;
+}

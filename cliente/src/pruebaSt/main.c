@@ -3,6 +3,11 @@
 
 int main(void)
 {
+    printf("Escribe:");
+    char s;
+    s = getchar();
+    printf("%c\n", s);
+    /*
     conectarBaseDeDatos();  
     Partida p;
 
@@ -33,7 +38,7 @@ int main(void)
         printf("ID 2: %i\n", p2->ID_Partida);
     }
 
-    desconectarBaseDeDatos();
+    desconectarBaseDeDatos();*/
     
     return 0;
 }

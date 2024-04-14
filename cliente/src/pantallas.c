@@ -699,7 +699,7 @@ void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu)
     }
 }
 
-void pantalla4(char *nick, Usuario *usu)//deberia estar hecho ya
+void pantalla4(char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -807,7 +807,7 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
     if (*opc == '1')
     {
         puntuacion=-10;
-        nuevaPartida->Resultado = "rendid";
+        nuevaPartida->Resultado = "rendido";
         nuevaPartida->Intentos = intentos_restantes;
         nuevaPartida->Puntuacion = puntuacion;
         

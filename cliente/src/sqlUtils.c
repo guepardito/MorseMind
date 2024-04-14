@@ -1045,9 +1045,9 @@ void obtenerTraducciones(char *nick, Usuario *usu)
         const char *palEsp = (const char *)sqlite3_column_text(stmt, 0);
         const char *morInt = (const char *)sqlite3_column_text(stmt, 1);
         const char *morAme = (const char *)sqlite3_column_text(stmt, 2);
-        printf("Esp: %s ", palEsp);
-        printf("Morse Int: %s ", morInt);
-        printf("Morse Ame: %s\n", morAme);
+        printf("Esp: %s \n", palEsp);
+        printf("\t -M. Internacional: %s \n", morInt);
+        printf("\t -M. Americano: %s\n", morAme);
     }
 
     if (sqlite3_finalize(stmt) != SQLITE_OK) {

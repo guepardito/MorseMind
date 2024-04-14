@@ -103,6 +103,7 @@ void pantalla11()
             estadisticaNueva.Aciertos=0;
             estadisticaNueva.fallos=0;
             usuarioNuevo.ID_Estadistica= estadisticaNueva.ID_Estadistica;
+            crearEstadisticas(estadisticaNueva);
             int resultado=crearUsuario(usuarioNuevo);
             if(resultado==SQLITE_OK){
                 printf("Pulsa cualquier tecla para continuar: ");
@@ -135,6 +136,7 @@ void pantalla11()
 
 void pantalla12()
 {
+    printf("H");
     system("cls");
     logo();
     printf("                  L O G  I N                     \n");
@@ -147,10 +149,8 @@ void pantalla12()
     char contrasena[25];
     printf("Contrasena: ");
     scanf("%s", contrasena);
-    printf("HIJO DE PUTA\n");
     Usuario *usu= leerUsuario(nick);
-    printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: %s\n", usu->Apodo);
-    /*
+    
     if(usu!=NULL){
         if (strcmp((*usu).Contrasenya, contrasena)==0){
             free(usu);
@@ -175,9 +175,10 @@ void pantalla12()
         {
             pantalla1();
         }
-    }*/
+    }
     
 }
+
 
 void pantalla2(char *nick)
 {
@@ -252,7 +253,6 @@ void pantalla31(char *nick)
         //nuevaPartida.Fecha= asctime(hora_local);
         //nuevaPartida.Fecha = "2024-04-13";
         pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0,alfabeto, nuevaPartida); // habra que pasar como parametro el idioma 
-        printf("AAAAAAAAAAAAAA");
     }
     else if (*opc == '2')
     {
@@ -812,12 +812,20 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         printf("Puntuacion: %i\n", puntuacion);
         //guardar_puntuacion_en_archivo(nick, puntuacion);
         Usuario *usuarioLeido= leerUsuario(nick);
-        nuevaPartida.ID_Usuario= (*usuarioLeido).ID_Usuario;
+        nuevaPartida.ID_Usuario = (*usuarioLeido).ID_Usuario;
         nuevaPartida.Intentos= intentos_restantes;
         nuevaPartida.Puntuacion= puntuacion;  
         nuevaPartida.Resultado= "renunciado";
-        crearPartida(nuevaPartida);
-        Estadisticas *estadisActuales= leerEstadisticas((*usuarioLeido).ID_Estadistica);
+        nuevaPartida.Fecha = "2024-06-28"; //ESTOS VALORES HABRIA QUE CAMBIAR PERO HAY QUE INSERTAR ALGO PARA QUE FUNCIONE
+        nuevaPartida.ID_Morse = 1;
+        nuevaPartida.ID_Palabra = 1;
+        nuevaPartida.ID_Partida = 1;
+        
+        //crearPartida(nuevaPartida);
+        int id = usuarioLeido->ID_Estadistica;
+        Estadisticas *estadisActuales= leerEstadisticas(id);
+        //AQUI ESTA EL ERROR
+        printf("AAAA: %s", estadisActuales->ID_Estadistica);
         (*estadisActuales).fallos=(*estadisActuales).fallos+1;
         actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
         free(usuarioLeido);
@@ -825,7 +833,6 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         usuarioLeido=NULL;
         estadisActuales=NULL;
         
-
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Pulsa cualquier tecla para continuar: ");
         scanf("%s", opc);
         pantalla2(nick);

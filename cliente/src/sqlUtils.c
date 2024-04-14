@@ -7,11 +7,12 @@
 sqlite3 *db;
 
 void conectarBaseDeDatos() {
-    int result = sqlite3_open("database.db", &db);
+    int result = sqlite3_open("database.sqlite", &db);
     if (result != SQLITE_OK) {
         fprintf(stderr, "Error al abrir la base de datos: %s\n", sqlite3_errmsg(db));
         exit(1);
     }
+
     sqlite3_exec(db, "DROP DATABASE IF EXISTS database;", NULL, NULL, NULL);
     sqlite3_exec(db, "CREATE DATABASE database CHARACTER SET UTF8 COLLATE UTF8_GENERAL_CI;", NULL, NULL, NULL);
     sqlite3_exec(db, "DROP TABLE IF EXISTS Usuario CASCADE;", NULL, NULL, NULL);
@@ -20,16 +21,16 @@ void conectarBaseDeDatos() {
     sqlite3_exec(db, "DROP TABLE IF EXISTS Estadisticas CASCADE;", NULL, NULL, NULL);
     sqlite3_exec(db, "DROP TABLE IF EXISTS Tipo_Morse CASCADE;", NULL, NULL, NULL);
 
-    sqlite3_exec(db, "CREATE TABLE Usuario (ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT, Correo TEXT, NOMBRE TEXT, APELLIDO TEXT, APODO TEXT, CONTRASENYA TEXT, ID_Estadistica INTEGER REFERENCES Estadisticas(ID_Estadistica));", NULL, NULL, NULL);
-    
-    sqlite3_exec(db, "CREATE TABLE Partida (ID_Partida INTEGER PRIMARY KEY AUTOINCREMENT, Puntuacion INTEGER, Resultado TEXT, Fecha TEXT, Intentos INTEGER, ID_Usuario INTEGER REFERENCES Usuario(ID_Usuario), ID_Morse INTEGER REFERENCES Tipo_Morse(ID_MORSE), ID_Palabra INTEGER REFERENCES Palabra(ID_Palabra));", NULL, NULL, NULL);
-        
+    sqlite3_exec(db, "CREATE TABLE Tipo_Morse (ID_Morse INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE_TIPO TEXT);", NULL, NULL, NULL);
+
     sqlite3_exec(db, "CREATE TABLE Palabra (ID_Palabra INTEGER PRIMARY KEY AUTOINCREMENT, PAL_ESP TEXT, PAL_MOR_INT TEXT, PAL_MOR_AM TEXT);", NULL, NULL, NULL);
 
     sqlite3_exec(db, "CREATE TABLE Estadisticas (ID_Estadistica INTEGER PRIMARY KEY AUTOINCREMENT, Aciertos INTEGER, Fallos INTEGER);", NULL, NULL, NULL);
 
-    sqlite3_exec(db, "CREATE TABLE Tipo_Morse (ID_Morse INTEGER PRIMARY KEY AUTOINCREMENT, NOMBRE_TIPO TEXT);", NULL, NULL, NULL);
-
+    sqlite3_exec(db, "CREATE TABLE Usuario (ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT, Correo TEXT, NOMBRE TEXT, APELLIDO TEXT, APODO TEXT, CONTRASENYA TEXT, ID_Estadistica INTEGER REFERENCES Estadisticas(ID_Estadistica));", NULL, NULL, NULL);
+    
+    sqlite3_exec(db, "CREATE TABLE Partida (ID_Partida INTEGER PRIMARY KEY AUTOINCREMENT, Puntuacion INTEGER, Resultado TEXT, Fecha TEXT, Intentos INTEGER, ID_Usuario INTEGER REFERENCES Usuario(ID_Usuario), ID_Morse INTEGER REFERENCES Tipo_Morse(ID_MORSE), ID_Palabra INTEGER REFERENCES Palabra(ID_Palabra));", NULL, NULL, NULL);
+        
 }
 
 void desconectarBaseDeDatos() {
@@ -281,7 +282,7 @@ void crearPartida(Partida nuevaPartida) {
 
 Partida* leerPartida(int ID) {
 	  sqlite3_stmt *stmt;
-    char *sql[] = "select ID_Partida, Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra from Partida where ID_Partida = ?";
+    char sql[] = "select ID_Partida, Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra from Partida where ID_Partida = ?";
     
     int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
     
@@ -656,19 +657,19 @@ void crearEstadisticas(Estadisticas nuevasEstadisticas){
 Estadisticas* leerEstadisticas(int ID) {
 	sqlite3_stmt *stmt;
     //ID_Estadistica INTEGER PRIMARY KEY AUTOINCREMENT, Aciertos INTEGER, Fallos INTEGER
-    char sql[] = "select ID_Estadistica, Aciertos, Fallos where ID_Partida = ?";
+    char sql[] = "select ID_Estadistica, Aciertos, Fallos from Estadisticas where ID_Partida = ?";
     Estadisticas *estadistica = malloc(sizeof(Estadisticas));
 
     int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
     
     if (result != SQLITE_OK) {
-		printf("Error en el statement (SELECT)\n");
+		printf("Error en el statement leerEstadisticas (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 		return result;
 		}
 
     printf("Peticion SQL preparada (SELECT)\n"); 
-	sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);  
+	//sqlite3_bind_text(stmt, 1, ID, -1, SQLITE_TRANSIENT);  
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         if (!estadistica) {
             printf("No se pudo asignar memoria para el usuario\n");
@@ -678,6 +679,7 @@ Estadisticas* leerEstadisticas(int ID) {
         estadistica->ID_Estadistica = sqlite3_column_int(stmt, 0);
         estadistica->Aciertos = sqlite3_column_int(stmt, 1);
         estadistica->fallos = sqlite3_column_int(stmt, 2);
+        printf("JHUIHV");
 	}
 
     result = sqlite3_finalize(stmt);

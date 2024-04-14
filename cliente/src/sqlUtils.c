@@ -2,6 +2,7 @@
 #include "sqlite3.h"
 #include "stdlib.h"
 #include <stdio.h>
+#include "string.h"
 
 sqlite3 *db;
 
@@ -129,22 +130,24 @@ int crearUsuario(Usuario nuevoUsuario){
 
 }
 
-Usuario* leerUsuario(char* Apodo){
+Usuario* leerUsuario(char* Apodo) {
     sqlite3_stmt *stmt;
     char sql[] = "select ID_USUARIO, CORREO, NOMBRE, APELLIDO, APODO, CONTRASENYA, ID_ESTADISTICA from USUARIO where APODO = ?";
     
-    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
+    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
     
     if (result != SQLITE_OK) {
-		printf("Error en el statement (SELECT)\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return result;
-		}
+        printf("Error en el statement (SELECT)\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        return NULL;
+    }
 
     printf("Peticion SQL preparada (SELECT)\n");
-	sqlite3_bind_text(stmt, 1, Apodo, -1, SQLITE_TRANSIENT);
 
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
+    sqlite3_bind_text(stmt, 1, Apodo, -1, SQLITE_TRANSIENT);
+
+    result = sqlite3_step(stmt);
+    if (result == SQLITE_ROW) {
         Usuario *usuario = malloc(sizeof(Usuario));
         if (!usuario) {
             printf("No se pudo asignar memoria para el usuario\n");
@@ -161,12 +164,24 @@ Usuario* leerUsuario(char* Apodo){
         usuario->ID_Estadistica = sqlite3_column_int(stmt, 6);
 
         sqlite3_finalize(stmt);
+        printf("Statement preparado finalizado (SELECT)\n");
         return usuario;
+        
+    } else if (result == SQLITE_DONE) {
+        printf("No se encontro ningun usuario con el Apodo especificado.\n");
+        sqlite3_finalize(stmt);
+        return NULL;
+
     } else {
-			sqlite3_finalize(stmt);
+        printf("Error en la ejecución de la consulta (SELECT)\n");
+        printf("%s\n", sqlite3_errmsg(db));
+
+        // Liberar memoria si es necesario
+        sqlite3_finalize(stmt);
         return NULL;
     }
 }
+
 
 // Funciones CRUD para la estructura PARTIDA
 void crearPartida(Partida nuevaPartida) {
@@ -266,7 +281,7 @@ void crearPartida(Partida nuevaPartida) {
 
 Partida* leerPartida(int ID) {
 	  sqlite3_stmt *stmt;
-    char sql[] = "select ID_Partida, Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra from Partida where ID_Partida = ?";
+    char *sql[] = "select ID_Partida, Puntuacion, Resultado, Fecha, Intentos, ID_Usuario, ID_Morse, ID_Palabra from Partida where ID_Partida = ?";
     
     int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL) ;
     
@@ -296,9 +311,10 @@ Partida* leerPartida(int ID) {
         partida->ID_Palabra = sqlite3_column_int(stmt, 6);
 
         sqlite3_finalize(stmt);
+        printf("Statement finalizado correctamente (SELECT)");
         return partida;
     } else {
-				sqlite3_finalize(stmt);
+		sqlite3_finalize(stmt);
         return NULL;
     }
 }
@@ -381,15 +397,19 @@ int leerPalabra(char* palabra){
 
     printf("Peticion SQL preparada (SELECT)\n");
 
-		int id_pal;
+	int id_pal;
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         id_pal = sqlite3_column_int(stmt, 0);
 
-        sqlite3_finalize(stmt);
-        return id_pal;
-    } else {
-				sqlite3_finalize(stmt);
-        return NULL;
+    if (result != SQLITE_OK) {
+		printf("Error finalizando el statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+	printf("Statement finalizado (SELECT)\n");
+
+    return id_pal;
     }
 }
 

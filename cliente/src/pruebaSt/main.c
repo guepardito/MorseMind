@@ -5,6 +5,17 @@
 int main(void)
 {
   conectarBaseDeDatos();
+  cargar_datos();
+  Tipo_Morse t;
+  t.ID_Morse = 1;
+  t.Nombre_Tipo = "Americano";
+
+  Tipo_Morse t2;
+  t.ID_Morse = 2;
+  t.Nombre_Tipo = "Internacional";
+
+  crearTipoMorse(t);
+  /*
   Partida p;
   Usuario usu;
   usu.Nombre = "hai";
@@ -28,6 +39,7 @@ int main(void)
   p.Puntuacion=456;
   p.Resultado="acertado";
   
+  /*
   crearPartida(p);
   //printf("AAAAAAAAAAA\n");
   Partida *p2;
@@ -38,6 +50,7 @@ int main(void)
     printf("%s", "funca");
   }
   //printf("Punt2 %i\n", (*p2).Puntuacion);
+  */
   desconectarBaseDeDatos();
-
+  
 }

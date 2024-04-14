@@ -102,8 +102,13 @@ void pantalla11()
             Estadisticas estadisticaNueva;
             estadisticaNueva.Aciertos=0;
             estadisticaNueva.fallos=0;
-            usuarioNuevo.ID_Estadistica= estadisticaNueva.ID_Estadistica;
-            crearEstadisticas(estadisticaNueva);
+            int ID_estadistica= crearEstadisticas(estadisticaNueva);
+
+            Estadisticas *estadisticaNueva2= leerEstadisticas(ID_estadistica);
+            usuarioNuevo.ID_Estadistica= (*estadisticaNueva2).ID_Estadistica;
+            free(estadisticaNueva2);
+            estadisticaNueva2=NULL;
+            
             int resultado=crearUsuario(usuarioNuevo);
             if(resultado==SQLITE_OK){
                 printf("Pulsa cualquier tecla para continuar: ");
@@ -112,6 +117,22 @@ void pantalla11()
             }
             free(usuarioLeido);
             usuarioLeido=NULL;
+        }
+        else{
+            printf("No has podido ser registrado, ese usuario ya existe. Quieres volver a intentarlo? \n");
+            printf("1. Si\n");
+            printf("2. No\n");
+            char opc[2];
+            printf("Introduzca la opcion deseada:");
+            scanf("%s", opc);
+            if (*opc == '1')
+            {
+                pantalla11();
+            }
+            else if (*opc == '2')
+            {
+                pantalla1();
+            }
         }
        
     }
@@ -151,36 +172,53 @@ void pantalla12()
     scanf("%s", contrasena);
     Usuario *usu= leerUsuario(nick);
     
-    if(usu!=NULL){
-        if (strcmp((*usu).Contrasenya, contrasena)==0){
+        if(usu!=NULL){
+            if (strcmp((*usu).Contrasenya, contrasena)==0){
+                pantalla2(nick, usu); 
+            }
+            else{
+                free(usu);
+                usu=NULL;
+                printf("No has podido iniciar sesion. Quieres volver a intentarlo? \n");
+                printf("1. Si\n");
+                printf("2. No\n");
+                char opc[2];
+                printf("Introduzca la opcion deseada:");
+                scanf("%s", opc);
+                if (*opc == '1')
+                {
+                    pantalla12();
+                }   
+                else if (*opc == '2')
+                {
+                    pantalla1();
+                }
+            }
+        }
+    
+        else{
             free(usu);
             usu=NULL;
-            pantalla2(nick); 
+            printf("No has podido iniciar sesion. Quieres volver a intentarlo? \n");
+            printf("1. Si\n");
+            printf("2. No\n");
+            char opc[2];
+            printf("Introduzca la opcion deseada:");
+            scanf("%s", opc);
+            if (*opc == '1')
+            {
+                pantalla12();
             }
-    }
-    else{
-        free(usu);
-        usu=NULL;
-        printf("No has podido iniciar sesion. Quieres volver a intentarlo? \n");
-        printf("1. Si\n");
-        printf("2. No\n");
-        char opc[2];
-        printf("Introduzca la opcion deseada:");
-        scanf("%s", opc);
-        if (*opc == '1')
-        {
-            pantalla12();
+            else if (*opc == '2')
+            {
+                pantalla1();
+            }
         }
-        else if (*opc == '2')
-        {
-            pantalla1();
-        }
-    }
     
 }
 
 
-void pantalla2(char *nick)
+void pantalla2(char *nick, Usuario* usuario)
 {
     system("cls");
     logo();
@@ -188,6 +226,7 @@ void pantalla2(char *nick)
     printf("=================================================\n");
     printf("\n");
     printf("Hola, %s!\n", nick);
+    printf("%i", (*usuario).ID_Estadistica);
     printf("\n");
     printf("1. Jugar\n");
     printf("2. Mostrar ranking\n");
@@ -198,27 +237,29 @@ void pantalla2(char *nick)
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla31(nick);
+        pantalla31(nick, usuario);
     }
     else if (*opc == '2')
     {
-        pantalla4(nick);
+        pantalla4(nick, usuario);
     }
     else if (*opc == '3')
     {
-        pantalla5(nick);
+        pantalla5(nick, usuario);
     }
     else if (*opc == '4')
     {
-        pantalla65(2, nick);
+        pantalla65(2, nick, usuario);
     }
     else
     {
+        free(usuario);
+        usuario=NULL;
         pantalla64();
     }
 }
 
-void pantalla31(char *nick)
+void pantalla31(char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -246,13 +287,13 @@ void pantalla31(char *nick)
             letras_conocidas[0]='\0';
         }
         Partida nuevaPartida;//={0,0,"", "", 0,0,0,0}; 
-        //nuevaPartida.ID_Morse=1;
-        //time_t tiempo_actual = time(NULL);
-        //struct tm *hora_local = localtime(&tiempo_actual);
+        nuevaPartida.ID_Morse=1;
+        time_t tiempo_actual = time(NULL);
+        struct tm *hora_local = localtime(&tiempo_actual);
         
-        //nuevaPartida.Fecha= asctime(hora_local);
-        //nuevaPartida.Fecha = "2024-04-13";
-        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0,alfabeto, nuevaPartida); // habra que pasar como parametro el idioma 
+        nuevaPartida.Fecha= asctime(hora_local);
+        crearPartida(nuevaPartida);
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0,alfabeto, nuevaPartida, usu); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
@@ -274,11 +315,12 @@ void pantalla31(char *nick)
         time_t tiempo_actual = time(NULL);
         struct tm *hora_local = localtime(&tiempo_actual);
         nuevaPartida.Fecha= asctime(hora_local);
-        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0, alfabeto, nuevaPartida);
+        crearPartida(nuevaPartida);
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0, alfabeto, nuevaPartida, usu);
     }
     else
     {
-        pantalla31(nick);
+        pantalla31(nick, usu);
     }
 }
 
@@ -396,18 +438,15 @@ void guardar_puntuacion_en_archivo(char *nick, int puntuacion) {
     fclose(archivo);
 }*/
 
-void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida nuevaPartida)
+void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida nuevaPartida, Usuario *usu)
 {   
     int jugando= 1;
     while(jugando==1){
         logo();
         
-        char* adivinanza;     
-        Usuario *usuarioLeido= leerUsuario(nick);                          
+        char* adivinanza;                            
         adivinanza = "adivinanza";//sortear_palabra((*usuarioLeido).ID_Usuario);  //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
         int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);
-        free(usuarioLeido);
-        usuarioLeido=NULL;
         display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); //añadir aqui las pistas y las letras acertadas 
         
         char opc[2];
@@ -424,8 +463,9 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                 nuevaPartida.Intentos= intentos_restantes;
                 int id_palabra= leerPalabra(adivinanza);
                 nuevaPartida.ID_Palabra= id_palabra;
+                actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
                 system("cls");
-                pantalla32(nick, puntuacion, nuevaPartida);
+                pantalla32(nick, puntuacion, nuevaPartida, usu);
             }
             else{
                 //anyadir palabras usadas, letras que coincidan
@@ -479,17 +519,15 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 
                     int id_palabra= leerPalabra(adivinanza);
                     nuevaPartida.ID_Palabra= id_palabra;
-                    Usuario *usuarioLeido= leerUsuario(nick);
-                    nuevaPartida.ID_Usuario= (*usuarioLeido).ID_Usuario;
+                    nuevaPartida.ID_Usuario= (*usu).ID_Usuario;
                     nuevaPartida.Intentos= intentos_restantes;
                     nuevaPartida.Puntuacion= puntuacion;
                     nuevaPartida.Resultado= "fallado";
-                    crearPartida(nuevaPartida);
-                    Estadisticas *estadisActuales= leerEstadisticas((*usuarioLeido).ID_Estadistica);
+                    actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+
+                    Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
                     (*estadisActuales).fallos=(*estadisActuales).fallos+1;
                     actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
-                    free(usuarioLeido);
-                    usuarioLeido=NULL;
                     free(estadisActuales);
                     estadisActuales=NULL;
 
@@ -502,18 +540,18 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                     if (*opc == '1')
                     {
                         system("cls");
-                        pantalla31(nick);
+                        pantalla31(nick, usu);
                     } 
                     else if(*opc == '2')
                     {
                         system("cls");
-                        pantalla2(nick);
+                        pantalla2(nick, usu);
                     }
     
 
                 }
                 else{
-                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto, nuevaPartida);
+                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto, nuevaPartida, usu);
                 }
             }
 
@@ -596,7 +634,8 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
             jugando=0;
             int id_palabra= leerPalabra(adivinanza);
             nuevaPartida.ID_Palabra= id_palabra;
-            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto, nuevaPartida);
+            actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto, nuevaPartida, usu);
         }
         else{
             mal_input=1;
@@ -608,7 +647,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 
 
 
-void pantalla32(char* nick, int puntuacion, Partida nuevaPartida)
+void pantalla32(char* nick, int puntuacion, Partida nuevaPartida, Usuario *usu)
 {
     //guardar_puntuacion_en_archivo(nick, puntuacion);
     
@@ -621,20 +660,22 @@ void pantalla32(char* nick, int puntuacion, Partida nuevaPartida)
     printf("1. Salir\n");
     printf("2. Volver a jugar\n");
 
-    Usuario *usuarioLeido= leerUsuario(nick);
-    nuevaPartida.ID_Usuario= (*usuarioLeido).ID_Usuario;
+    nuevaPartida.ID_Usuario= (*usu).ID_Usuario;
     nuevaPartida.Puntuacion= puntuacion;
     nuevaPartida.Resultado= "acertado";
-    crearPartida(nuevaPartida);
-    Estadisticas *estadisActuales= leerEstadisticas((*usuarioLeido).ID_Estadistica);
+    printf("ID: %i", nuevaPartida.ID_Usuario);
+    printf("ID: %i", nuevaPartida.Puntuacion);
+    printf("ID: %s", nuevaPartida.Resultado);
+    actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+
+    
+    Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
     (*estadisActuales).Aciertos=(*estadisActuales).Aciertos+1;
     actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
-    free(usuarioLeido);
     free(estadisActuales);
-    usuarioLeido=NULL;
     estadisActuales=NULL;
 
-
+    
 
     char opc[2];
     printf("Introduzca la opcion deseada:");
@@ -644,16 +685,16 @@ void pantalla32(char* nick, int puntuacion, Partida nuevaPartida)
     }
     if (*opc == '1')
     {
-        pantalla63(32, nick);
+        pantalla63(32, nick, usu);
     }
 
     if (*opc == '2')
     {
-        pantalla31(nick);
+        pantalla31(nick, usu);
     }
 }
 
-void pantalla4(char *nick)
+void pantalla4(char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -721,15 +762,15 @@ void pantalla4(char *nick)
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla41(nick);
+        pantalla41(nick, usu);
     }
     else if (*opc == '2')
     {
-        pantalla63(4, nick);
+        pantalla63(4, nick, usu);
     }
 }
 
-void pantalla41(char *nick)
+void pantalla41(char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -750,11 +791,11 @@ void pantalla41(char *nick)
     }
     else if (*opc == '2')
     {
-        pantalla4(nick);
+        pantalla4(nick, usu);
     }
 }
 
-void pantalla5(char *nick)
+void pantalla5(char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -766,7 +807,7 @@ void pantalla5(char *nick)
     scanf("%s", opc);
     if (*opc == '1')
     {
-        pantalla2(nick);
+        pantalla2(nick, usu);
     }
 }
 /*
@@ -792,7 +833,7 @@ void pantalla61(int pantalla)
     }
 }
 */
-void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida nuevaPartida)
+void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida nuevaPartida, Usuario *usu)
 {
     system("cls");
     logo();
@@ -811,40 +852,36 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         puntuacion=-10;
         printf("Puntuacion: %i\n", puntuacion);
         //guardar_puntuacion_en_archivo(nick, puntuacion);
-        Usuario *usuarioLeido= leerUsuario(nick);
-        nuevaPartida.ID_Usuario = (*usuarioLeido).ID_Usuario;
+        nuevaPartida.ID_Usuario = (*usu).ID_Usuario;
         nuevaPartida.Intentos= intentos_restantes;
         nuevaPartida.Puntuacion= puntuacion;  
         nuevaPartida.Resultado= "renunciado";
-        nuevaPartida.Fecha = "2024-06-28"; //ESTOS VALORES HABRIA QUE CAMBIAR PERO HAY QUE INSERTAR ALGO PARA QUE FUNCIONE
-        nuevaPartida.ID_Morse = 1;
-        nuevaPartida.ID_Palabra = 1;
-        nuevaPartida.ID_Partida = 1;
         
-        //crearPartida(nuevaPartida);
-        int id = usuarioLeido->ID_Estadistica;
-        Estadisticas *estadisActuales= leerEstadisticas(id);
+        actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+        printf("ACTUALIZAO");
+        //Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
+
         //AQUI ESTA EL ERROR
+        /*
         printf("AAAA: %s", estadisActuales->ID_Estadistica);
         (*estadisActuales).fallos=(*estadisActuales).fallos+1;
         actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
-        free(usuarioLeido);
         free(estadisActuales);
-        usuarioLeido=NULL;
         estadisActuales=NULL;
         
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Pulsa cualquier tecla para continuar: ");
         scanf("%s", opc);
-        pantalla2(nick);
+        pantalla2(nick, usu);*/
     }
+
     else if (*opc == '2')
     {   
         system("cls");
-         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida); 
+         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu); 
     }
 }
 
-void pantalla63(int pantalla, char *nick)
+void pantalla63(int pantalla, char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -858,22 +895,22 @@ void pantalla63(int pantalla, char *nick)
     scanf("%s", opc);
     if (*opc == '1')
     {   if(pantalla == 32 | pantalla == 4){
-            pantalla2(nick);
+            pantalla2(nick, usu);
         }
     }
     else if (*opc == '2')
     {
         if(pantalla == 32){
             Partida partidanula;
-            pantalla32(nick,0, partidanula);
+            pantalla32(nick,0, partidanula, usu);
         }
         else if(pantalla == 4){
-            pantalla4(nick);
+            pantalla4(nick, usu);
         }
     }
 }
 
-void pantalla65(int pantalla, char *nick)
+void pantalla65(int pantalla, char *nick, Usuario *usu)
 {
     system("cls");
     logo();
@@ -887,13 +924,15 @@ void pantalla65(int pantalla, char *nick)
     scanf("%s", opc);
     if (*opc == '1')
     {   if (pantalla==2){
+            free(usu);
+            usu=NULL;
             pantalla1();
         }
     }
     else if (*opc == '2')
     {
         if(pantalla == 2){
-            pantalla2(nick);
+            pantalla2(nick, usu);
         }
     }
 }

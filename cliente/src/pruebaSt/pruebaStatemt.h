@@ -1,9 +1,11 @@
-#ifndef _PRUEBASTATENT_H_
-#define _PRUEBASTATENT_H_
+#ifndef _SQL_UTILS_H_
+#define _SQL_UTILS_H_
 
+#include "pruebaStatemt.h"
 #include "sqlite3.h"
 #include "stdlib.h"
 #include <stdio.h>
+#include "string.h"
 
 typedef struct {
     int ID_Usuario;
@@ -49,12 +51,35 @@ typedef struct
 
 void conectarBaseDeDatos();
 void desconectarBaseDeDatos();
-void crearPartida(Partida nuevaPartida);
-int leerPalabra(char* palabra);
-void actualizarPalabra(int ID, Palabra datosActualizados);
-void eliminarPalabra(int ID);
+
+// Funciones CRUD para la estructura Usuario
 int crearUsuario(Usuario nuevoUsuario);
 Usuario* leerUsuario(char* Apodo);
+
+// Funciones CRUD para la estructura Partida
+void crearPartida(Partida nuevaPartida);
+Partida* leerPartida(int ID);
+void actualizarPartida(int ID, Partida datosActualizados);
+
+// Funciones CRUD para la estructura Palabra
+void crearPalabra(Palabra nuevaPalabra);
+int leerPalabra(char* Palabra);
+void actualizarPalabra(int ID, Palabra datosActualizados);
+void eliminarPalabra(int ID);
+
+// Funciones CRUD para la estructura Tpo_Morse
+void crearTipoMorse(Tipo_Morse nuevoTipoMorse);
+Tipo_Morse* leerTipoMorse(int ID);
+
+
+// Funciones CRUD para la estructura Estadisticas
+void crearEstadisticas(Estadisticas nuevasEstadisticas);
+Estadisticas* leerEstadisticas(int ID);
+void actualizarEstadisticas(int ID, Estadisticas datosActualizados);
+void eliminarEstadisticas(int ID);
+
+char* sortear_n_palabra(int ID); //se pasa el ID de usuario
+int cargar_datos();
 
 
 #endif

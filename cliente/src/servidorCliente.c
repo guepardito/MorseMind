@@ -37,7 +37,7 @@ void load_config(const char *filename, AppConfig *config) {
     fclose(file);
 }
 
-int main() {
+int mainServidor() {
     WSADATA wsaData;
     SOCKET ConnectSocket = INVALID_SOCKET;
     struct sockaddr_in clientService;

@@ -53,6 +53,7 @@ Usuario* leerUsuario(char* Apodo);
 // Funciones CRUD para la estructura Partida
 void crearPartida(Partida nuevaPartida);
 Partida* leerPartida(int ID);
+void actualizarPartida(int ID, Partida datosActualizados);
 
 // Funciones CRUD para la estructura Palabra
 void crearPalabra(Palabra nuevaPalabra);
@@ -66,7 +67,7 @@ Tipo_Morse* leerTipoMorse(int ID);
 
 
 // Funciones CRUD para la estructura Estadisticas
-void crearEstadisticas(Estadisticas nuevasEstadisticas);
+int crearEstadisticas(Estadisticas nuevasEstadisticas);
 Estadisticas* leerEstadisticas(int ID);
 void actualizarEstadisticas(int ID, Estadisticas datosActualizados);
 void eliminarEstadisticas(int ID);

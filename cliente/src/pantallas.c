@@ -736,16 +736,19 @@ void pantalla41(char *nick, Usuario *usu)
         pantalla4(nick, usu);
     }
     
-    int total = (*misEstadisticas).Aciertos + (*misEstadisticas).fallos;
-    float porcentaje = (*misEstadisticas).Aciertos/total*100;
+   
+    int aciertos = (*misEstadisticas).Aciertos;
+    int fallos = (*misEstadisticas).fallos;
+    int total = aciertos + fallos;
+    float porcentaje = ((float)aciertos/total)*100;
     
     system("cls");
     logo();
     printf("         T U S  E S T A D I S T I C A S          \n");
     printf("=================================================\n\n");
-    printf("Porcentaje de aciertos: %i%%\n", (*misEstadisticas).Aciertos/total*100);
+    printf("Porcentaje de aciertos: %.2f%%\n", porcentaje);
     printf("Numero de partidas jugadas: %i\n\n", total);
-    
+        
     printf("Opciones:\n");
     printf("1. Exportar mis estadisticas a fichero\n");
     printf("2. Atras\n");

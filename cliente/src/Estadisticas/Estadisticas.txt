@@ -3,3 +3,9 @@
 
 Porcentaje de aciertos: 100.00%
 Numero de partidas jugadas: 1
+         T U S  E S T A D I S T I C A S          
+=================================================
+
+Porcentaje de aciertos: 0.00%
+Numero de partidas jugadas: 12
+Fecha: 12468456

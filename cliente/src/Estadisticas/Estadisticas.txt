@@ -1,11 +1,15 @@
          T U S  E S T A D I S T I C A S          
 =================================================
 
-Porcentaje de aciertos: 100.00%
-Numero de partidas jugadas: 1
-         T U S  E S T A D I S T I C A S          
-=================================================
+FECHA: Sun Apr 14 23:24:03 2024
+-----------------------------------
+	 Porcentaje de aciertos: 23.53%
+	 Numero de partidas jugadas: 17
 
-Porcentaje de aciertos: 0.00%
-Numero de partidas jugadas: 12
-Fecha: 12468456
+
+FECHA: Sun Apr 14 23:24:24 2024
+-----------------------------------
+	 Porcentaje de aciertos: 23.53%
+	 Numero de partidas jugadas: 17
+
+

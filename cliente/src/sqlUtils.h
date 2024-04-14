@@ -64,8 +64,8 @@ void actualizarPartida(int ID, Partida datosActualizados);
 // Funciones CRUD para la estructura Palabra
 void crearPalabra(Palabra nuevaPalabra);
 int leerPalabra(char* Palabra);
-void actualizarPalabra(int ID, Palabra datosActualizados);
-void eliminarPalabra(int ID);
+//void actualizarPalabra(int ID, Palabra datosActualizados);
+//void eliminarPalabra(int ID);
 
 // Funciones CRUD para la estructura Tpo_Morse
 void crearTipoMorse(Tipo_Morse nuevoTipoMorse);

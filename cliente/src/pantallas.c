@@ -285,15 +285,30 @@ void pantalla31(char *nick, Usuario *usu)
             pista[0]='\0';
             letras_conocidas[0]='\0';
         }
-        Partida nuevaPartida;//={0,0,"", "", 0,0,0,0}; 
+        Partida nuevaPartida;
         nuevaPartida.ID_Morse=1;
         nuevaPartida.ID_Usuario= (*usu).ID_Usuario;
         time_t tiempo_actual = time(NULL);
         struct tm *hora_local = localtime(&tiempo_actual);
-        
         nuevaPartida.Fecha= asctime(hora_local);
-        crearPartida(nuevaPartida);
-        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0,alfabeto, nuevaPartida, usu); // habra que pasar como parametro el idioma 
+        nuevaPartida.Resultado="nulo";
+        nuevaPartida.Puntuacion=0;
+        nuevaPartida.Intentos=0;
+        nuevaPartida.ID_Palabra=1;
+        int idPartida= crearPartida(nuevaPartida);
+        Partida *partidaDefinitiva = leerPartida(idPartida);
+        printf("%s",partidaDefinitiva->Fecha);
+        printf("%i",partidaDefinitiva->ID_Morse);
+        printf("%i",partidaDefinitiva->ID_Palabra);
+        printf("%i",partidaDefinitiva->ID_Usuario);
+        printf("%i",partidaDefinitiva->Intentos);
+        printf("%i",partidaDefinitiva->Puntuacion);
+        printf("%s\n",partidaDefinitiva->Resultado);
+        char* adivinanza = sortear_palabra((*usu).ID_Usuario);  //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        
+          
+
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0,alfabeto, partidaDefinitiva, usu, adivinanza); // habra que pasar como parametro el idioma 
     }
     else if (*opc == '2')
     {
@@ -316,8 +331,13 @@ void pantalla31(char *nick, Usuario *usu)
         struct tm *hora_local = localtime(&tiempo_actual);
         nuevaPartida.Fecha= asctime(hora_local);
         nuevaPartida.ID_Usuario= (*usu).ID_Usuario;
-        crearPartida(nuevaPartida);
-        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0, alfabeto, nuevaPartida, usu);
+        int idPartida= crearPartida(nuevaPartida);
+        Partida *partidaDefinitiva= leerPartida(idPartida);
+
+        char* adivinanza = sortear_palabra((*usu).ID_Usuario);  //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        
+    
+        pantalla3(nick, 7, palabras_usadas, letras_conocidas, pista, 0, 0, 0, 0, alfabeto, partidaDefinitiva, usu, adivinanza);
     }
     else
     {
@@ -347,10 +367,10 @@ void display_pantalla3(int intentos_restantes, char** palabras_usadas, char* let
     printf("Puntuacion: %i\n\n", puntuacion); 
     printf("Intentos restantes: %i\n\n", intentos_restantes); 
     printf("La palabra esta siendo impresa en los LEDs\n");
-    printf("%s", adivinanza);
+    //printf("%s", adivinanza);
     //printf("%c\n", alfabeto[0][1]);
-    //mostrar_palabra_LEDS(adivinanza, alfabeto);     //se imprime por pantalla
-    printf("%s", adivinanza);
+    mostrar_palabra_LEDS(adivinanza, alfabeto);     //se imprime por pantalla
+    //printf("%s", adivinanza);
     printf("\n");
     printf("Palabras usadas: \n");         
     for(int i=0; i<7;i++){
@@ -439,17 +459,20 @@ void guardar_puntuacion_en_archivo(char *nick, int puntuacion) {
     fclose(archivo);
 }*/
 
-void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida nuevaPartida, Usuario *usu)
+void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida *nuevaPartida, Usuario *usu, char* adivinanza)
 {   
     int jugando= 1;
     while(jugando==1){
-        logo();
-        
-        char* adivinanza;                            
-        adivinanza = "adivinanza";//sortear_palabra((*usuarioLeido).ID_Usuario);  //mandarle el usuario, acceder a la base de datos y darle una palabra que no haya hecho
+        logo();                          
         int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);
         display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); //añadir aqui las pistas y las letras acertadas 
-        
+        printf("%s",nuevaPartida->Fecha);
+        printf("%i",nuevaPartida->ID_Morse);
+        printf("%i",nuevaPartida->ID_Palabra);
+        printf("%i",nuevaPartida->ID_Usuario);
+        printf("%i",nuevaPartida->Intentos);
+        printf("%i",nuevaPartida->Puntuacion);
+        printf("%s\n",nuevaPartida->Resultado);
         char opc[2];
         printf("Introduzca la opcion deseada:");
         scanf("%s", opc);
@@ -458,14 +481,17 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
             char palabra[15];
             printf("Introduce palabra:");
             scanf("%s", palabra);
-
             if(strcasecmp(palabra, adivinanza)==0){         
                 jugando=0;
-                nuevaPartida.Intentos= intentos_restantes;
-                int id_palabra= leerPalabra(adivinanza);
-                //nuevaPartida.ID_Palabra=777; //id_palabra;
-                actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+
+                (*nuevaPartida).Intentos= intentos_restantes;
+                //int id_palabra= leerPalabra(adivinanza);
+                //(*nuevaPartida).ID_Palabra=id_palabra;
+                printf("ACTUALIZAR PARTIDA");
+                actualizarPartida((*nuevaPartida).ID_Partida, *nuevaPartida);
                 system("cls");
+                printf("LEER PARTIDA");
+                nuevaPartida= leerPartida(nuevaPartida->ID_Partida);
                 pantalla32(nick, puntuacion, nuevaPartida, usu);
             }
             else{
@@ -519,18 +545,22 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                     //guardar_puntuacion_en_archivo(nick, puntuacion);
 
                     int id_palabra= leerPalabra(adivinanza);
-                    nuevaPartida.ID_Palabra= id_palabra;
-                    nuevaPartida.ID_Usuario= (*usu).ID_Usuario;
-                    nuevaPartida.Intentos= intentos_restantes;
-                    nuevaPartida.Puntuacion= puntuacion;
-                    nuevaPartida.Resultado= "fallado";
-                    actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+                    (*nuevaPartida).ID_Palabra= id_palabra;
+                    (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
+                    (*nuevaPartida).Intentos= intentos_restantes;
+                    (*nuevaPartida).Puntuacion= puntuacion;
+                    (*nuevaPartida).Resultado= "fallado";
+                    (*nuevaPartida).Resultado= "fallado";
+                    actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
 
                     Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
                     (*estadisActuales).fallos=(*estadisActuales).fallos+1;
                     actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
                     free(estadisActuales);
                     estadisActuales=NULL;
+                    //MIRAR ESTOS FREE
+                    free(nuevaPartida);
+                    nuevaPartida = NULL;
 
 
                     printf("Quieres jugar otra vez?\n");
@@ -548,11 +578,9 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                         system("cls");
                         pantalla2(nick, usu);
                     }
-    
-
                 }
                 else{
-                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto, nuevaPartida, usu);
+                    pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto, nuevaPartida, usu, adivinanza);
                 }
             }
 
@@ -634,9 +662,9 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
             system("cls");
             jugando=0;
             int id_palabra= leerPalabra(adivinanza);
-            nuevaPartida.ID_Palabra= id_palabra;
-            actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
-            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto, nuevaPartida, usu);
+            (*nuevaPartida).ID_Palabra= id_palabra;
+            actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
+            pantalla62(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto, nuevaPartida, usu, adivinanza);
         }
         else{
             mal_input=1;
@@ -648,7 +676,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
 
 
 
-void pantalla32(char* nick, int puntuacion, Partida nuevaPartida, Usuario *usu)
+void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu)
 {
     //guardar_puntuacion_en_archivo(nick, puntuacion);
     
@@ -660,16 +688,20 @@ void pantalla32(char* nick, int puntuacion, Partida nuevaPartida, Usuario *usu)
     printf("Puntuacion: %i\n", puntuacion);
     printf("1. Salir\n");
     printf("2. Volver a jugar\n");
-
-    nuevaPartida.Puntuacion= puntuacion;
-    nuevaPartida.Resultado= "acertado";
-    printf("ID usu: %i", nuevaPartida.ID_Usuario);
-    printf("puntos: %i", nuevaPartida.Puntuacion);
-    printf("resultado: %s", nuevaPartida.Resultado);
     
-    actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
-    Partida *actualizada= leerPartida(nuevaPartida.ID_Partida);
+    
+    (*nuevaPartida).Puntuacion = puntuacion;
+    (*nuevaPartida).Resultado = "acertado";
+    printf("ID usu: %i", (*nuevaPartida).ID_Usuario);
+    printf("puntos: %i", (*nuevaPartida).Puntuacion);
+    printf("resultado: %s", (*nuevaPartida).Resultado);
+    printf("ID PARTIDA: %i", (*nuevaPartida).ID_Partida);
+    
+    actualizarPartida((*nuevaPartida).ID_Partida, *nuevaPartida);
+    
+    Partida *actualizada = leerPartida((*nuevaPartida).ID_Partida);
 
+    
     printf("ACTUALIZADO\n");
     printf("Puntuacion: %i\n", (*actualizada).Puntuacion);
     printf("ID usu: %i\n", (*actualizada).ID_Usuario);
@@ -688,7 +720,6 @@ void pantalla32(char* nick, int puntuacion, Partida nuevaPartida, Usuario *usu)
     free(estadisActuales);
     estadisActuales=NULL;
 
-    
 
     char opc[2];
     printf("Introduzca la opcion deseada:");
@@ -860,7 +891,7 @@ void pantalla61(int pantalla)
     }
 }
 */
-void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida nuevaPartida, Usuario *usu)
+void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida *nuevaPartida, Usuario *usu, char* adivinanza)
 {
     system("cls");
     logo();
@@ -879,12 +910,12 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         puntuacion=-10;
         printf("Puntuacion: %i\n", puntuacion);
         //guardar_puntuacion_en_archivo(nick, puntuacion);
-        nuevaPartida.ID_Usuario = (*usu).ID_Usuario;
-        nuevaPartida.Intentos= intentos_restantes;
-        nuevaPartida.Puntuacion= puntuacion;  
-        nuevaPartida.Resultado= "renunciado";
+        (*nuevaPartida).ID_Usuario = (*usu).ID_Usuario;
+        (*nuevaPartida).Intentos= intentos_restantes;
+        (*nuevaPartida).Puntuacion= puntuacion;  
+        (*nuevaPartida).Resultado= "renunciado";
         
-        actualizarPartida(nuevaPartida.ID_Partida, nuevaPartida);
+        actualizarPartida((*nuevaPartida).ID_Partida, *nuevaPartida);
         printf("ACTUALIZAO");
         //Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
 
@@ -904,7 +935,7 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
     else if (*opc == '2')
     {   
         system("cls");
-         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu); 
+         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
     }
 }
 
@@ -928,7 +959,7 @@ void pantalla63(int pantalla, char *nick, Usuario *usu)
     else if (*opc == '2')
     {
         if(pantalla == 32){
-            Partida partidanula;
+            Partida *partidanula;
             pantalla32(nick,0, partidanula, usu);
         }
         else if(pantalla == 4){
@@ -1001,24 +1032,24 @@ char* sortear_palabra(int ID_Usuario){ //recibir usuario para acceder a la base 
 
 
 void mostrar_palabra_LEDS(char* adivinanza, char** alfabeto){
-    printf("%c\n", alfabeto[0][1]);
-    for (int i=0; i<strlen(adivinanza); i++){
-        int no_encontrado= 1;
-        int j=0;
-        while(no_encontrado==1){
-            if(adivinanza[i]==alfabeto[j][0]){
-                no_encontrado=0;
+    // reocorremos cada letra de la palabra
+    for (int i = 0; i < strlen(adivinanza); i++)
+    {
+        char letra = toupper(adivinanza[i]);
 
-                int tamPala=strlen(alfabeto[j]);
-                char* morsePal=malloc(tamPala*sizeof(char));
-                for(int i=1;i<tamPala;i++){
-                    morsePal[i-1]=alfabeto[j][i];
+        // recorremos el abecedario
+        for (int j = 0; j < 26; j++)
+        {
+            if (letra == alfabeto[j][0])
+            {
+                // imprimimos la traduccion sin la letra original abecedario[0]
+                for (int k = 1; k < strlen(alfabeto[j]) + 1; k++)
+                {
+                    printf("%c", alfabeto[j][k]);
                 }
-                morsePal[tamPala]='\0';
-                printf("%s\t" ,morsePal);
+                printf(" ");
+                break;
             }
-            
-            j++;
         }
     }
     printf("\n");
@@ -1078,7 +1109,7 @@ char** crearAlfabeto(char *fichero, char** alfabeto){
         }
         else if(c == '\n'){
             alfabeto[fila][col] = '\0';
-            //printf("Tamaño de la fila %d: %d\n", fila, col);
+            //printf("Tamano de la fila %d: %d\n", fila, col);
             fila++;
             col = 0;
         }

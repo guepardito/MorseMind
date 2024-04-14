@@ -46,24 +46,11 @@ typedef struct
 void conectarBaseDeDatos();
 void desconectarBaseDeDatos();
 
-// Funciones CRUD para la estructura Usuario
-int crearUsuario(Usuario nuevoUsuario);
-Usuario* leerUsuario(char* Apodo);
 
 // Funciones CRUD para la estructura Partida
-void crearPartida(Partida nuevaPartida);
+int crearPartida(Partida nuevaPartida);
 Partida* leerPartida(int ID);
 void actualizarPartida(int ID, Partida datosActualizados);
-
-// Funciones CRUD para la estructura Palabra
-void crearPalabra(Palabra nuevaPalabra);
-int leerPalabra(char* Palabra);
-void actualizarPalabra(int ID, Palabra datosActualizados);
-void eliminarPalabra(int ID);
-
-// Funciones CRUD para la estructura Tpo_Morse
-void crearTipoMorse(Tipo_Morse nuevoTipoMorse);
-Tipo_Morse* leerTipoMorse(int ID);
 
 
 // Funciones CRUD para la estructura Estadisticas

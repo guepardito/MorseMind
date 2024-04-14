@@ -51,7 +51,7 @@ int crearUsuario(Usuario nuevoUsuario);
 Usuario* leerUsuario(char* Apodo);
 
 // Funciones CRUD para la estructura Partida
-void crearPartida(Partida nuevaPartida);
+int crearPartida(Partida nuevaPartida);
 Partida* leerPartida(int ID);
 void actualizarPartida(int ID, Partida datosActualizados);
 

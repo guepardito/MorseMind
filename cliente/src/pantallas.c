@@ -790,6 +790,7 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
 
     else if (opc == '2')
     {   
+
         system("cls");
          pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
     }

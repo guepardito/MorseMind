@@ -7,7 +7,7 @@
 sqlite3 *db;
 
 void conectarBaseDeDatos() {
-    int result = sqlite3_open("database2.sqlite", &db);
+    int result = sqlite3_open("database.sqlite", &db);
     if (result != SQLITE_OK) {
         fprintf(stderr, "Error al abrir la base de datos: %s\n", sqlite3_errmsg(db));
         exit(1);

@@ -778,7 +778,7 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Quieres intentarlo otra vez?\n");
         printf("1.Si, quiero volver a jugar!\n");
         printf("2.No, lo intentare mas tarde.\n");
-        printf("Que quieres hacer? \n ");
+        printf("Que quieres hacer? ");
         scanf("%s", opc);
         if(*opc=='1'){
             pantalla31(nick, usu);

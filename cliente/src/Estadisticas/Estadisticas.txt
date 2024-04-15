@@ -13,3 +13,9 @@ FECHA: Sun Apr 14 23:24:24 2024
 	 Numero de partidas jugadas: 17
 
 
+FECHA: Mon Apr 15 02:41:05 2024
+-----------------------------------
+	 Porcentaje de aciertos: 25.00%
+	 Numero de partidas jugadas: 4
+
+

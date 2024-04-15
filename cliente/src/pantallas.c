@@ -635,9 +635,6 @@ void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu)
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
-    if(puntuacion!=0){ // importante que sea diferente de 0 -Nora
-         //almacenar puntuacion de partida
-    }
     if (*opc == '1')
     {
         pantalla63(32, nick, usu);
@@ -778,9 +775,17 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         free(estadisActuales);
         estadisActuales=NULL;
         
-        printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Pulsa cualquier tecla para continuar: ");
+        printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Quieres intentarlo otra vez?\n");
+        printf("1.Si, quiero volver a jugar!\n");
+        printf("2.No, lo intentare mas tarde.\n");
+        printf("Que quieres hacer? \n ");
         scanf("%s", opc);
-        pantalla2(nick, usu);
+        if(*opc=='1'){
+            pantalla31(nick, usu);
+        }
+        else{
+            pantalla2(nick, usu);
+        }
     }
 
     else if (opc == '2')

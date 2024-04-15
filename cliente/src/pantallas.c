@@ -265,16 +265,17 @@ void pantalla31(char *nick, Usuario *usu)
     printf("=================================================\n");
     printf("1. Codigo morse internacional\n");
     printf("2. Codigo morse americano\n");
+    
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
     char **alfabeto;
     alfabeto = (char**) malloc(26* sizeof(char*));
 
+
     if (*opc == '1') 
     {
         system("cls");
-        printf("FALLA");
         alfabeto= crearAlfabeto("Traducciones/internacional.txt", alfabeto);
         
         for (int i = 0; i < 15; i++) {
@@ -413,9 +414,6 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
         int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);
         display_pantalla3(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); //añadir aqui las pistas y las letras acertadas 
         char opc[2];
-        /*PRINT AYUDA
-        printf("morse: %i\n", nuevaPartida->ID_Morse);
-        printf("idPalabra: %i\n", nuevaPartida->ID_Palabra);*/
         printf("Introduzca la opcion deseada:");
         scanf("%s", opc);
         if (*opc == '1')
@@ -436,11 +434,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                 pantalla32(nick, puntuacion, nuevaPartida, usu, alfabeto);
             }
             else{
-                //anyadir palabras usadas, letras que coincidan
                 system("cls");
-                //char opc[2];
-                //printf("Pulsa cualquier tecla para continuar: ");
-                //scanf("%s", opc);
                 fallado=1;
                 mal_input=0;
                 pista_mostrada=0;
@@ -636,8 +630,8 @@ void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu,
     
     free(estadisActuales);
     estadisActuales=NULL;
-    free(nuevaPartida);
-    nuevaPartida = NULL;
+    //free(nuevaPartida);
+    //nuevaPartida = NULL;
 
     for (int i=0; i<26; i++){
         free(alfabeto[i]);
@@ -650,6 +644,7 @@ void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu,
     if (*opc == '2')
     {
         pantalla31(nick, usu);
+
     }
     else if (*opc == '1')
     {
@@ -801,11 +796,11 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         }
     }
 
-    else if (opc == '2')
+    else if (*opc == '2')
     {   
 
         system("cls");
-         pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
+        pantalla3(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
     }
 }
 

@@ -1,22 +1,16 @@
          T U S  E S T A D I S T I C A S          
 =================================================
 
-FECHA: Sun Apr 14 23:24:03 2024
------------------------------------
-	 Porcentaje de aciertos: 23.53%
-	 Numero de partidas jugadas: 17
-
-
-FECHA: Sun Apr 14 23:24:24 2024
------------------------------------
-	 Porcentaje de aciertos: 23.53%
-	 Numero de partidas jugadas: 17
-
-
 FECHA: Mon Apr 15 02:41:05 2024
 -----------------------------------
 	 Porcentaje de aciertos: 25.00%
 	 Numero de partidas jugadas: 4
+
+
+FECHA: Mon Apr 15 06:20:57 2024
+-----------------------------------
+	 Porcentaje de aciertos: 80.00%
+	 Numero de partidas jugadas: 5
 
 
 FECHA: Mon Apr 15 03:01:15 2024

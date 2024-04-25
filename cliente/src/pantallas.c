@@ -421,18 +421,54 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
             char palabra[15];
             printf("Introduce palabra:");
             scanf("%s", palabra);
-            if(strcasecmp(palabra, adivinanza)==0){         
-                jugando=0;
+            if(strcasecmp(palabra, adivinanza)==0){ 
+
+                system("cls");  
+                logo();
+                printf("              E N H O R A B U E N A !             \n");
+                printf("=================================================\n\n");
+                printf("Has acertado!\n");
+                printf("Puntuacion: %i\n", puntuacion);
                 (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
                 (*nuevaPartida).Intentos= intentos_restantes;
                 (*nuevaPartida).Puntuacion= puntuacion;
                 (*nuevaPartida).Resultado= "acertado";
+                actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
 
-                actualizarPartida((*nuevaPartida).ID_Partida, *nuevaPartida);
-                system("cls");
-                nuevaPartida= leerPartida(nuevaPartida->ID_Partida);
-                pantalla32(nick, puntuacion, nuevaPartida, usu, alfabeto);
+                Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
+                (*estadisActuales).Aciertos=(*estadisActuales).Aciertos+1;
+                actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
+                    
+                free(estadisActuales);
+                estadisActuales=NULL;
+                free(nuevaPartida);
+                nuevaPartida = NULL;
+
+                for (int i=0; i<26; i++){
+                    free(alfabeto[i]);
+                    alfabeto[i]=NULL;
+                }
+
+                free(alfabeto);
+                alfabeto=NULL;
+
+                printf("Quieres jugar otra vez?\n");
+                printf("1. Si, quiero jugar otra partida!\n");
+                printf("2. No, quiero volver a la pantalla principal\n");
+                printf("Introduzca la opcion deseada:");
+                scanf("%s", opc);
+                if (*opc == '1')
+                {
+                    system("cls");
+                    pantalla31(nick, usu);
+                } 
+                else if(*opc == '2')
+                {
+                    system("cls");
+                    pantalla2(nick, usu);
+                }
             }
+            
             else{
                 system("cls");
                 fallado=1;
@@ -465,8 +501,6 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                 
 
 
-//programar letras acertadas
-
                 if (intentos_restantes==0){
                     system("cls");
                     
@@ -489,15 +523,16 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                     
                     free(estadisActuales);
                     estadisActuales=NULL;
-                    //MIRAR ESTOS FREE
                     free(nuevaPartida);
                     nuevaPartida = NULL;
 
 
                     for (int i=0; i<26; i++){
                         free(alfabeto[i]);
+                        alfabeto[i]=NULL;
                     }
                     free(alfabeto);
+                    alfabeto=NULL;
 
                     printf("Quieres jugar otra vez?\n");
                     printf("1. Si, quiero jugar otra partida!\n");
@@ -528,14 +563,7 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
                 int j;
                 int encontrada=0;
 
-                //PRUEBA    PRUEBA  PRUEBA  PRUEBA
-                //PRUEBA    PRUEBA  PRUEBA  PRUEBA
-                //PRUEBA    PRUEBA  PRUEBA  PRUEBA 
                 printf("\n Has solicitado una pista.\n");
-                //penalizar_pista();
-                //mostrar_puntuacion();
-                //mostrar_pistas_utilizadas();
-                //printf("\n");
 
                 mal_input=0;
                 
@@ -608,49 +636,6 @@ void pantalla3(char *nick, int intentos_restantes, char** palabras_usadas, char*
     }
 }
 
-
-
-void pantalla32(char* nick, int puntuacion, Partida *nuevaPartida, Usuario *usu, char** alfabeto)
-{
-    //guardar_puntuacion_en_archivo(nick, puntuacion);
-    
-    system("cls");
-    logo();
-    printf("                 A D I V I N A !                 \n");
-    printf("=================================================\n\n");
-    printf("Enhorabuena! Has acertado la palabra.\n\n");
-    printf("Puntuacion: %i\n", puntuacion);
-    printf("1. Salir\n");
-    printf("2. Volver a jugar\n");
-    
-    
-    Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
-    (*estadisActuales).Aciertos=(*estadisActuales).Aciertos+1;
-    actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
-    
-    free(estadisActuales);
-    estadisActuales=NULL;
-    //free(nuevaPartida);
-    //nuevaPartida = NULL;
-
-    for (int i=0; i<26; i++){
-        free(alfabeto[i]);
-    }
-    free(alfabeto);
-    
-    char opc[2];
-    printf("Introduzca la opcion deseada:");
-    scanf("%s", opc);
-    if (*opc == '2')
-    {
-        pantalla31(nick, usu);
-
-    }
-    else if (*opc == '1')
-    {
-        pantalla63(32, nick, usu, alfabeto);
-    }
-}
 
 void pantalla4(char *nick, Usuario *usu)
 {
@@ -745,7 +730,6 @@ void pantalla5(char *nick, Usuario *usu)
     }
 }
 
-
 void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, char** alfabeto, Partida *nuevaPartida, Usuario *usu, char* adivinanza)
 {
     system("cls");
@@ -768,7 +752,9 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
         nuevaPartida->Puntuacion = puntuacion;
         
         actualizarPartida((*nuevaPartida).ID_Partida, *nuevaPartida);
-        
+        //free partida//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        free(nuevaPartida);
+        nuevaPartida = NULL;
         Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
 
         int fallos = (*estadisActuales).fallos;
@@ -780,8 +766,10 @@ void pantalla62(char *nick, int intentos_restantes, char** palabras_usadas, char
 
         for (int i=0; i<26; i++){
             free(alfabeto[i]);
+            alfabeto[i]=NULL;
         }
         free(alfabeto);
+        alfabeto=NULL;
 
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Quieres intentarlo otra vez?\n");
         printf("1.Si, quiero volver a jugar!\n");
@@ -818,17 +806,13 @@ void pantalla63(int pantalla, char *nick, Usuario *usu, char** alfabeto)
     scanf("%s", opc);
     fflush(stdin);
     if (*opc == '1')
-    {   if(pantalla == 32 | pantalla == 4 | pantalla==41){
+    {   if( pantalla == 4 | pantalla==41){
             pantalla2(nick, usu);
         }
     }
     else if (*opc == '2')
     {
-        if(pantalla == 32){
-            Partida *partidanula;
-            pantalla32(nick,0, partidanula, usu, alfabeto);
-        }
-        else if(pantalla == 4){
+        if(pantalla == 4){
             pantalla4(nick, usu);
         }
         else if(pantalla ==41){

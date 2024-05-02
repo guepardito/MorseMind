@@ -17,7 +17,7 @@ int main(void)
   crearTipoMorse(i);
   crearTipoMorse(a);
   cargar_datos();
-  pantalla1();
+  pantallaInicio();
   desconectarBaseDeDatos();
   
 }

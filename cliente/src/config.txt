@@ -1,5 +1,5 @@
-server_ip 192.168.1.1
+server_ip 192.168.1.16
 server_port 27015
-admin_user admin
-admin_password contrasena
-database_path ./database.db
+admin_user pi
+admin_password raspberry
+database_path ./database.sqlite

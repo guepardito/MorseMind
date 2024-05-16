@@ -7,6 +7,21 @@
 #include "sqlUtils.h"
 #include "sqlite3.h"
 #include "time.h"
+#include "pruebaCliente.h"
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <winsock2.h>
+#pragma comment(lib, "ws2_32.lib")
+#define PORT 8080
+#define SERVER_ADDR "192.168.1.16" // Dirección IP de tu Raspberry Pi
+
+
+
+
+
 
 char* palabras_usadas[7];
 char letras_conocidas[15];
@@ -881,6 +896,8 @@ char* sortearPalabra(int ID_Usuario){ //recibir usuario para acceder a la base d
 
 void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     // recorremos cada letra de la palabra
+    char morse[1000];
+    int indice=0;
     for (int i = 0; i < strlen(adivinanza); i++)
     {
         char letra = toupper(adivinanza[i]);
@@ -892,15 +909,35 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             {
                 // imprimimos la traduccion sin la letra original abecedario[0]
                 for (int k = 1; k < strlen(alfabeto[j]) + 1; k++)
-                {
+                {   
                     printf("%c", alfabeto[j][k]);
+                    morse[indice]=alfabeto[j][k];
+                    indice++;
                 }
                 printf(" ");
+                morse[indice]=" ";/////////////////////////////////////////////////////////////////////////////
+                indice++;
                 break;
             }
         }
     }
     printf("\n");
+    morse[indice]= "\0";
+    WSADATA wsa;
+    SOCKET sock;
+    struct sockaddr_in server;
+
+    // Inicializar Winsock y crear el socket
+    crearSocket(wsa, &sock, &server);
+    printf("%s", morse);
+    char *respuesta = mandarMensaje(morse, sock);
+    
+    if (respuesta != NULL) {
+        printf("Respuesta recibida: %s\n", respuesta);
+    }
+
+    // Cerrar el socket y limpiar Winsock
+    cerrarSocket(sock);
 }
 
 

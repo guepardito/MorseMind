@@ -56,11 +56,12 @@ int main() {
             printf("Mensaje del cliente: %s\n", buffer);
     
             // Enviar mensaje al cliente
-            send(new_socket, hello, strlen(hello), 0);
+            send(new_socket, 0, strlen(0), 0);
             printf("Mensaje enviado al cliente\n");
 
             // Limpiar el buffer después de procesar el mensaje
             memset(buffer, 0, sizeof(buffer));
+
         }
 
         // Cerrar el socket de la conexión cuando se termina de leer

@@ -896,40 +896,82 @@ char* sortearPalabra(int ID_Usuario){ //recibir usuario para acceder a la base d
 
 void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     // recorremos cada letra de la palabra
-    char morse[1000];
+    //int long_morse = strlen(adivinanza)+1;
+    //char *morse = (char*)malloc(long_morse*sizeof(char)); //FALTA HACER FREE
+    //printf("%i\n", long_morse);
     int indice=0;
-    for (int i = 0; i < strlen(adivinanza); i++)
-    {
+    for (int i = 0; i < strlen(adivinanza); i++){
         char letra = toupper(adivinanza[i]);
 
         // recorremos el abecedario
-        for (int j = 0; j < 26; j++)
-        {
-            if (letra == alfabeto[j][0])
-            {
+        for (int j = 0; j < 26; j++){
+            if (letra == alfabeto[j][0]){
                 // imprimimos la traduccion sin la letra original abecedario[0]
-                for (int k = 1; k < strlen(alfabeto[j]) + 1; k++)
-                {   
+                for (int k = 1; k < strlen(alfabeto[j]) + 1; k++){   
                     printf("%c", alfabeto[j][k]);
-                    morse[indice]=alfabeto[j][k];
+                    //morse[indice]=alfabeto[j][k];
                     indice++;
                 }
                 printf(" ");
-                morse[indice]=" ";/////////////////////////////////////////////////////////////////////////////
-                indice++;
+                //morse[indice]="_";/////////////////////////////////////////////////////////////////////////////
                 break;
             }
         }
     }
+    char *morse = (char*)malloc(indice*sizeof(char)); //FALTA HACER FREE
+    //printf("%i\n", indice); //Comprobar que el length esta bien
+
+    int insertar_palabras = 0;
+    for (int i = 0; i < strlen(adivinanza); i++){
+        char letra = toupper(adivinanza[i]);
+        // recorremos el abecedario
+        for (int j = 0; j < 26; j++){
+            if (letra == alfabeto[j][0]){
+                // imprimimos la traduccion sin la letra original abecedario[0]
+                for (int k = 1; k < strlen(alfabeto[j]) + 1; k++){   
+                    //printf("%c", alfabeto[j][k]);
+                    morse[insertar_palabras]=alfabeto[j][k];
+                    //printf("%i", insertar_palabras);
+                    //printf("%c", morse[insertar_palabras]);
+                    insertar_palabras++;
+                }
+                //printf(" ");
+                printf("%i", insertar_palabras);
+                morse[insertar_palabras]=' ';/////////////////////////////////////////////////////////////////////////////
+                
+                break;
+            }
+        }
+    }
+    //printf("J");
+    morse[indice] = '\0';
+    for(int i = 0; i<indice; i++){
+        printf("%c", morse[i]);
+    }
+    printf("HJVV\n");
+    printf("%s", morse);
+
+    printf("FUNCIONA");
+    //printf("%s\n", morse);
+    printf("ZZZZZZZZZZZZZZZZZZZZ");
+    
     printf("\n");
-    morse[indice]= "\0";
+    //morse[indice]= "\0";
     WSADATA wsa;
     SOCKET sock;
     struct sockaddr_in server;
 
     // Inicializar Winsock y crear el socket
     crearSocket(wsa, &sock, &server);
-    printf("%s", morse);
+    //printf("%s", morse);
+    /*
+    for(int i = 0; i<indice; i++){
+        respuesta = mandarMensaje(morse[i], sock);
+        if (respuesta != NULL) {
+            printf("Respuesta recibida: %s\n", respuesta);
+        }
+    }*/
+
     char *respuesta = mandarMensaje(morse, sock);
     
     if (respuesta != NULL) {

@@ -4,10 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#ifdef __linux__
 #include <arpa/inet.h>
-#endif
 
 #define PORT 8080
 
@@ -18,6 +15,7 @@ int main() {
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
     char *hello = "Hola desde el servidor";
+    int valread;
 
     // Crear el socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -47,18 +45,27 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    // Aceptar conexión entrante
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-        perror("accept");
-        exit(EXIT_FAILURE);
+    while(1) {
+        // Aceptar conexión entrante
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+            perror("accept");
+            exit(EXIT_FAILURE);
+        }
+        while ((valread = recv(new_socket, buffer, 1024, 0)) > 0) {
+            // Leer datos del cliente
+            printf("Mensaje del cliente: %s\n", buffer);
+    
+            // Enviar mensaje al cliente
+            send(new_socket, hello, strlen(hello), 0);
+            printf("Mensaje enviado al cliente\n");
+
+            // Limpiar el buffer después de procesar el mensaje
+            memset(buffer, 0, sizeof(buffer));
+        }
+
+        // Cerrar el socket de la conexión cuando se termina de leer
+        close(new_socket);
     }
 
-    // Leer datos del cliente
-    read(new_socket, buffer, 1024);
-    printf("Mensaje del cliente: %s\n", buffer);
-
-    // Enviar mensaje al cliente
-    send(new_socket, hello, strlen(hello), 0);
-    printf("Mensaje enviado al cliente\n");
     return 0;
 }

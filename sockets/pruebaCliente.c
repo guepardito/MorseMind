@@ -41,21 +41,27 @@ int main() {
     }
  
     printf("Conectado al servidor\n");
- 
-    const char *hola = "Hola servidor";
-    if (send(sock, hola, strlen(hola), 0) < 0) {
-        printf("Fallo al enviar el mensaje\n");
-        closesocket(sock);
-        WSACleanup();
-        return 1;
-    }
-    printf("Mensaje enviado\n");
- 
-    if ((recv_size = recv(sock, server_reply, 2000, 0)) == SOCKET_ERROR) {
-        printf("Error al recibir respuesta\n");
-    } else {
-        server_reply[recv_size] = '\0';
-        printf("Respuesta del servidor: %s\n", server_reply);
+
+    while (1) {
+        printf("Introduce el mensaje: ");
+        fgets(message, 1000, stdin);
+        message[strcspn(message, "\n")] = 0; // Eliminar el salto de línea
+
+        if (send(sock, message, strlen(message), 0) < 0) {
+            printf("Fallo al enviar el mensaje\n");
+            closesocket(sock);
+            WSACleanup();
+            return 1;
+        }
+        
+        printf("Mensaje enviado\n");
+
+        if ((recv_size = recv(sock, server_reply, 2000, 0)) == SOCKET_ERROR) {
+            printf("Error al recibir respuesta\n");
+        } else {
+            server_reply[recv_size] = '\0';
+            printf("Respuesta del servidor: %s\n", server_reply);
+        }
     }
  
     closesocket(sock);

@@ -11,14 +11,14 @@
 int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
     //printf("Inicializando Winsock...\n");
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
-        printf("ERROR: No se ha podido conectar con el servidor");
+        printf("ERROR: No se ha podido conectar con el servidor\n");
         //printf("Error al iniciar Winsock: %d\n", WSAGetLastError());
         return 1;
     }
 
     //printf("Creando socket...\n");
     if ((*sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-        printf("ERROR: No se ha podido conectar con el servidor");
+        printf("ERROR: No se ha podido conectar con el servidor\n");
         //printf("No se pudo crear el socket: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
@@ -29,7 +29,7 @@ int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
 
     //printf("Conectando al servidor...\n");
     if (connect(*sock, (struct sockaddr *)server, sizeof(*server)) < 0) {
-        printf("ERROR: No se ha podido conectar con el servidor");
+        printf("ERROR: No se ha podido conectar con el servidor\n");
         //printf("Error al conectar con el servidor: %d\n", WSAGetLastError());
         closesocket(*sock);
         WSACleanup();

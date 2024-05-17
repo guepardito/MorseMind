@@ -354,56 +354,65 @@ void pantallaCrearAlfabeto(char *nick, Usuario *usu)
     }
 }
 
-void displayPantallaJuego(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, char* adivinanza){
-    printf("                 A D I V I N A !                 \n");
-    printf("=================================================\n\n");
-    
-     if (mal_input==1){
-        mal_input=0;
-        printf("Intentalo otra vez, esa opcion no existe\n");
-    }
-
-    else if (fallado==1){
-        fallado=0;
-        printf("Lo siento. Intentalo otra vez!\n");
-    }
-
-    else if (pista_mostrada==1){
-        pista_mostrada=0;
-        printf("Se ha guardado la pista correctamente\n");
-    }
-
-    printf("Puntuacion: %i\n\n", puntuacion); 
-    printf("Intentos restantes: %i\n\n", intentos_restantes); 
-    printf("La palabra esta siendo impresa en los LEDs\n");
-    mostrarPalabraLEDS(adivinanza, alfabeto);     //se imprime por pantalla
-    printf("\n");
-    
-    printf("Palabras usadas: \n");         
-    for(int i=0; i<7;i++){
-        if(palabras_usadas[i]!=NULL && palabras_usadas[i][0]!= '\0'){
-            printf("\t-  %s\n", palabras_usadas[i]);
+int displayPantallaJuego(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, char* adivinanza){
+    int error = mostrarPalabraLEDS(adivinanza, alfabeto); //se imprime por pantalla. Si devuelve 1, ha habido error
+    if(error == 1){ //HA OCURRIDO ERROR
+        return error;
+    }else{
+        printf("                 A D I V I N A !                 \n");
+        printf("=================================================\n\n");
+        
+        if (mal_input==1){
+            mal_input=0;
+            printf("Intentalo otra vez, esa opcion no existe\n");
         }
-    }
-    
-    printf("Pistas: \n");
-    for(int a=0; a<strlen(pista);a++){
-        if(pista!=NULL && isalpha(pista[a])){
-            printf("\t-  %c\n", tolower(pista[a]));
-        }
-    }
-    printf("Conoces las letras: \n");
-    if(strlen(letras_conocidas)!=0){
-        for(int i=0; i<strlen(letras_conocidas);i++){
-            printf("\t-  %c\n", letras_conocidas[i]);
-        }
-    }
-    printf("\n");
 
-    printf("Opciones: \n");
-    printf("1. Insertar palabra\n");
-    printf("2. Mostrar pista (Recuerda que tu puntuacion disminuira)\n");
-    printf("3. Rendirse\n");
+        else if (fallado==1){
+            fallado=0;
+            printf("Lo siento. Intentalo otra vez!\n");
+        }
+
+        else if (pista_mostrada==1){
+            pista_mostrada=0;
+            printf("Se ha guardado la pista correctamente\n");
+        }
+
+        printf("Puntuacion: %i\n\n", puntuacion); 
+        printf("Intentos restantes: %i\n\n", intentos_restantes); 
+        printf("La palabra esta siendo impresa en los LEDs\n");
+        //int mostrarLeds = mostrarPalabraLEDS(adivinanza, alfabeto);     //se imprime por pantalla
+        //if(mostrarLeds == 1){ //HA OCURRIDO ERROR
+        //    
+        //}
+        printf("\n");
+        
+        printf("Palabras usadas: \n");         
+        for(int i=0; i<7;i++){
+            if(palabras_usadas[i]!=NULL && palabras_usadas[i][0]!= '\0'){
+                printf("\t-  %s\n", palabras_usadas[i]);
+            }
+        }
+        
+        printf("Pistas: \n");
+        for(int a=0; a<strlen(pista);a++){
+            if(pista!=NULL && isalpha(pista[a])){
+                printf("\t-  %c\n", tolower(pista[a]));
+            }
+        }
+        printf("Conoces las letras: \n");
+        if(strlen(letras_conocidas)!=0){
+            for(int i=0; i<strlen(letras_conocidas);i++){
+                printf("\t-  %c\n", letras_conocidas[i]);
+            }
+        }
+        printf("\n");
+
+        printf("Opciones: \n");
+        printf("1. Insertar palabra\n");
+        printf("2. Mostrar pista (Recuerda que tu puntuacion disminuira)\n");
+        printf("3. Rendirse\n");
+        return error;
+    }
 }
 
 int recalcular_puntuacion(char* adivinanza, int intentos_restantes, char *pista){
@@ -427,124 +436,50 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
         logo();                         
         int puntuacion= recalcular_puntuacion(adivinanza, intentos_restantes, pista);                 
 
-        displayPantallaJuego(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); 
-        char opc[2];
-        printf("Introduzca la opcion deseada:");
-        scanf("%s", opc);
-        if (*opc == '1')
-        {
-            char palabra[15];
-            printf("Introduce palabra:");
-            scanf("%s", palabra);
-            if(strcasecmp(palabra, adivinanza)==0){ 
-                system("cls");  
-                logo();
-                printf("              E N H O R A B U E N A !             \n");
-                printf("=================================================\n\n");
-                printf("Has acertado!\n");
-                printf("Puntuacion: %i\n", puntuacion);
-                (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
-                (*nuevaPartida).Intentos= intentos_restantes;
-                (*nuevaPartida).Puntuacion= puntuacion;
-                (*nuevaPartida).Resultado= "acertado";
-                actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
-
-                Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
-                (*estadisActuales).Aciertos=(*estadisActuales).Aciertos+1;
-                actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
-                    
-                free(estadisActuales);
-                estadisActuales=NULL;
-                free(nuevaPartida);
-                nuevaPartida = NULL;
-
-                for (int i=0; i<26; i++){
-                    free(alfabeto[i]);
-                    alfabeto[i]=NULL;
-                }
-
-                free(alfabeto);
-                alfabeto=NULL;
-
-                printf("Quieres jugar otra vez?\n");
-                printf("1. Si, quiero jugar otra partida!\n");
-                printf("2. No, quiero volver a la pantalla principal\n");
-                printf("Introduzca la opcion deseada:");
-                scanf("%s", opc);
-                if (*opc == '1')
-                {
-                  system("cls");
-                    pantallaCrearAlfabeto(nick, usu);
-                } 
-                else if(*opc == '2')
-                {
-                  system("cls");
-                    pantallaPrincipal(nick, usu);
-                }
-            }
-            
-            else{
-              system("cls");
-                fallado=1;
-                mal_input=0;
-                pista_mostrada=0;
-
-                intentos_restantes-=1;
-                palabras_usadas[7-intentos_restantes-1]= palabra;
-
-                int indice=strlen(letras_conocidas);
-
-                for(int i=0; i< strlen(palabra); i++){
-                    for(int j=0; j < strlen(adivinanza); j++){
-                        if (tolower(palabra[i])==tolower(adivinanza[j])){
-                            int encontrado=0;
-                            
-                            for(int k=0; k<strlen(letras_conocidas); k++){
-                                if(tolower(palabra[i])== tolower(letras_conocidas[k])){
-                                    encontrado=1;
-                                } 
-                            }
-                            if(encontrado==0){
-                                letras_conocidas[indice]= tolower(palabra[i]);
-                                indice++;
-                            }
-                            
-                        }
-                    }
-                }
-                
-
-
-                if (intentos_restantes==0){
-                  system("cls");
-                    
+        int mostrar = displayPantallaJuego(intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada, alfabeto, adivinanza); //Si devuelve 1, ha habido error, no se puede jugar
+        if(mostrar == 1){
+            jugando = 0;
+            char opcErr[2];
+            printf("Introduzca cualquier tecla para continuar: ");
+            scanf("%s", opcErr);
+            pantallaPrincipal(nick, usu);
+        }else{
+        
+            char opc[2];
+            printf("Introduzca la opcion deseada:");
+            scanf("%s", opc);
+            if (*opc == '1')
+            {
+                char palabra[15];
+                printf("Introduce palabra:");
+                scanf("%s", palabra);
+                if(strcasecmp(palabra, adivinanza)==0){ 
+                    system("cls");  
                     logo();
-                    printf("                    V A Y A !                    \n");
+                    printf("              E N H O R A B U E N A !             \n");
                     printf("=================================================\n\n");
-                    printf("Parece que te has quedado sin intentos, es una pena!\n");
-                    puntuacion=-10;
+                    printf("Has acertado!\n");
                     printf("Puntuacion: %i\n", puntuacion);
-
                     (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
                     (*nuevaPartida).Intentos= intentos_restantes;
                     (*nuevaPartida).Puntuacion= puntuacion;
-                    (*nuevaPartida).Resultado= "fallado";
+                    (*nuevaPartida).Resultado= "acertado";
                     actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
 
                     Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
-                    (*estadisActuales).fallos=(*estadisActuales).fallos+1;
+                    (*estadisActuales).Aciertos=(*estadisActuales).Aciertos+1;
                     actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
-                    
+                        
                     free(estadisActuales);
                     estadisActuales=NULL;
                     free(nuevaPartida);
                     nuevaPartida = NULL;
 
-
                     for (int i=0; i<26; i++){
                         free(alfabeto[i]);
                         alfabeto[i]=NULL;
                     }
+
                     free(alfabeto);
                     alfabeto=NULL;
 
@@ -555,98 +490,180 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                     scanf("%s", opc);
                     if (*opc == '1')
                     {
-                      system("cls");
+                    system("cls");
                         pantallaCrearAlfabeto(nick, usu);
                     } 
                     else if(*opc == '2')
                     {
-                      system("cls");
+                    system("cls");
                         pantallaPrincipal(nick, usu);
                     }
                 }
-                else{
-                    pantallaJuego(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto, nuevaPartida, usu, adivinanza);
-                }
-            }
-
-        }
-        else if (*opc == '2')
-        {
-            if( strlen(pista)<5){
-                int i=0;
-                int j;
-                int encontrada=0;
-
-                printf("\n Has solicitado una pista.\n");
-
-                mal_input=0;
                 
-                while(i<strlen(adivinanza)& encontrada==0){
-                    j=0;
-                    int encontrar=1;
-                    while(j<strlen(letras_conocidas)& encontrar==1){
-                        if(tolower(adivinanza[i])==tolower(letras_conocidas[j])){
-                            encontrar=0;
-                        }
-                        j++;
-                    }
-                    if(encontrar==1){
-                        int mostrada=0;
-                        int k=0;
-                        while(k< strlen(pista)&mostrada==0){
-                            if(pista[k]==adivinanza[i]){
-                                mostrada=1;
+                else{
+                system("cls");
+                    fallado=1;
+                    mal_input=0;
+                    pista_mostrada=0;
+
+                    intentos_restantes-=1;
+                    palabras_usadas[7-intentos_restantes-1]= palabra;
+
+                    int indice=strlen(letras_conocidas);
+
+                    for(int i=0; i< strlen(palabra); i++){
+                        for(int j=0; j < strlen(adivinanza); j++){
+                            if (tolower(palabra[i])==tolower(adivinanza[j])){
+                                int encontrado=0;
+                                
+                                for(int k=0; k<strlen(letras_conocidas); k++){
+                                    if(tolower(palabra[i])== tolower(letras_conocidas[k])){
+                                        encontrado=1;
+                                    } 
+                                }
+                                if(encontrado==0){
+                                    letras_conocidas[indice]= tolower(palabra[i]);
+                                    indice++;
+                                }
+                                
                             }
-                            k++;
-                        }
-                        if(mostrada==0){
-                            encontrada=1;
-                            printf("Una de las letras de la palabra a adivinar es... '%c'\n", adivinanza[i]);
-                            pista_mostrada=1;
-                            fallado=0;
-                            int indice=strlen(pista);
-                            pista[indice]=adivinanza[i];
-
-                            char opc[2];
-                            printf("Pulsa cualquier tecla para continuar: ");
-                            scanf("%s", opc);
                         }
                     }
+                    
 
-                    i++;
+
+                    if (intentos_restantes==0){
+                    system("cls");
+                        
+                        logo();
+                        printf("                    V A Y A !                    \n");
+                        printf("=================================================\n\n");
+                        printf("Parece que te has quedado sin intentos, es una pena!\n");
+                        puntuacion=-10;
+                        printf("Puntuacion: %i\n", puntuacion);
+
+                        (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
+                        (*nuevaPartida).Intentos= intentos_restantes;
+                        (*nuevaPartida).Puntuacion= puntuacion;
+                        (*nuevaPartida).Resultado= "fallado";
+                        actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
+
+                        Estadisticas *estadisActuales= leerEstadisticas((*usu).ID_Estadistica);
+                        (*estadisActuales).fallos=(*estadisActuales).fallos+1;
+                        actualizarEstadisticas((*estadisActuales).ID_Estadistica, *estadisActuales);
+                        
+                        free(estadisActuales);
+                        estadisActuales=NULL;
+                        free(nuevaPartida);
+                        nuevaPartida = NULL;
+
+
+                        for (int i=0; i<26; i++){
+                            free(alfabeto[i]);
+                            alfabeto[i]=NULL;
+                        }
+                        free(alfabeto);
+                        alfabeto=NULL;
+
+                        printf("Quieres jugar otra vez?\n");
+                        printf("1. Si, quiero jugar otra partida!\n");
+                        printf("2. No, quiero volver a la pantalla principal\n");
+                        printf("Introduzca la opcion deseada:");
+                        scanf("%s", opc);
+                        if (*opc == '1')
+                        {
+                        system("cls");
+                            pantallaCrearAlfabeto(nick, usu);
+                        } 
+                        else if(*opc == '2')
+                        {
+                        system("cls");
+                            pantallaPrincipal(nick, usu);
+                        }
+                    }
+                    else{
+                        pantallaJuego(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, fallado, mal_input, pista_mostrada,alfabeto, nuevaPartida, usu, adivinanza);
+                    }
                 }
 
-                if(encontrada==0){
-                    printf("Lo siento, no se ha podido encontrar una pista en este momento\n");
+            }
+            else if (*opc == '2')
+            {
+                if( strlen(pista)<5){
+                    int i=0;
+                    int j;
+                    int encontrada=0;
+
+                    printf("\n Has solicitado una pista.\n");
+
+                    mal_input=0;
+                    
+                    while(i<strlen(adivinanza)& encontrada==0){
+                        j=0;
+                        int encontrar=1;
+                        while(j<strlen(letras_conocidas)& encontrar==1){
+                            if(tolower(adivinanza[i])==tolower(letras_conocidas[j])){
+                                encontrar=0;
+                            }
+                            j++;
+                        }
+                        if(encontrar==1){
+                            int mostrada=0;
+                            int k=0;
+                            while(k< strlen(pista)&mostrada==0){
+                                if(pista[k]==adivinanza[i]){
+                                    mostrada=1;
+                                }
+                                k++;
+                            }
+                            if(mostrada==0){
+                                encontrada=1;
+                                printf("Una de las letras de la palabra a adivinar es... '%c'\n", adivinanza[i]);
+                                pista_mostrada=1;
+                                fallado=0;
+                                int indice=strlen(pista);
+                                pista[indice]=adivinanza[i];
+
+                                char opc[2];
+                                printf("Pulsa cualquier tecla para continuar: ");
+                                scanf("%s", opc);
+                            }
+                        }
+
+                        i++;
+                    }
+
+                    if(encontrada==0){
+                        printf("Lo siento, no se ha podido encontrar una pista en este momento\n");
+                        fallado=1;
+                        pista_mostrada=0;
+                        char opc[2];
+                        printf("Pulsa cualquier tecla para continuar: ");
+                        scanf("%s", opc);
+                    }
+                    
+                }
+                else{
+                    printf("Lo siento, no puedes pedir mas pistas. Ya has gastado tus 5 pistas disponibles\n");
                     fallado=1;
                     pista_mostrada=0;
                     char opc[2];
                     printf("Pulsa cualquier tecla para continuar: ");
                     scanf("%s", opc);
                 }
-                
+            }
+            else if (*opc == '3')
+            {
+            system("cls");
+                jugando=0;
+                actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
+                pantallaRendir(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto, nuevaPartida, usu, adivinanza);
             }
             else{
-                printf("Lo siento, no puedes pedir mas pistas. Ya has gastado tus 5 pistas disponibles\n");
-                fallado=1;
-                pista_mostrada=0;
-                char opc[2];
-                printf("Pulsa cualquier tecla para continuar: ");
-                scanf("%s", opc);
+                mal_input=1;
+                fallado=0;
             }
         }
-        else if (*opc == '3')
-        {
-          system("cls");
-            jugando=0;
-            actualizarPartida((*nuevaPartida).ID_Partida, (*nuevaPartida));
-            pantallaRendir(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, alfabeto, nuevaPartida, usu, adivinanza);
-        }
-        else{
-            mal_input=1;
-            fallado=0;
-        }
-
     }
 }
 
@@ -798,7 +815,6 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
 
     else if (*opc == '2')
     {   
-
       system("cls");
         pantallaJuego(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
     }
@@ -894,7 +910,7 @@ char* sortearPalabra(int ID_Usuario){ //recibir usuario para acceder a la base d
 }
 
 
-void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
+int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     int indice=0;
     for (int i = 0; i < strlen(adivinanza); i++){
         char letra = toupper(adivinanza[i]);
@@ -911,6 +927,7 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
                 break;
             }
         }
+        
     }
 
     char *morse = (char*)malloc(indice*sizeof(char));
@@ -944,7 +961,6 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             morse[insertar_palabras] = '\0';
         }
     }
-    
     printf("%s", morse);
     
     //COMUNICACION RASPBERRY
@@ -954,20 +970,22 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
 
     // Inicializar Winsock y crear el socket
     int socket = crearSocket(wsa, &sock, &server);
+    int error = socket; //Valor para avisar al resto de funciones si se ha podido conectar o no al servidor
     //Si no ocurre ningun error al conectar con el servidor
-    if(socket != 1){
+    if(socket == 0){
         char *respuesta = mandarMensaje(morse, sock);
         if (respuesta != NULL) {
             printf("Respuesta recibida: %s\n", respuesta);
         }
         // Cerrar el socket y limpiar Winsock
         cerrarSocket(sock);
-    }else{ //Error al conectar con el servidor, no se inicia la partida
-        return;
     }
+
+    //Error al conectar con el servidor, no se inicia la partida -> ERROR = 1
     //FREE
     free(morse);
     morse = NULL;
+    return error;
 }
 
 

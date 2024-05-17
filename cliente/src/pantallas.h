@@ -9,7 +9,7 @@ void pantallaLogin();
 void cerrar();
 void pantallaPrincipal(char *nick, Usuario  *usuario);
 void pantallaCrearAlfabeto(char *nick, Usuario *usu);
-void displayPantallaJuego(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, char* adivinanza);
+int displayPantallaJuego(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, char* adivinanza);
 void pantallaJuego(char* nick, int intentos_restantes,char** palabras_usadas, char* letras_conocidas, char*pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, Partida *nuevapartida, Usuario *usu, char* adivinanza);
 void pantallaRanking(char *nick, Usuario *usu);
 void pantallaEstadisticas(char *nick, Usuario *usu);
@@ -20,7 +20,7 @@ void pantallaAvisoCierre();
 void pantallaAvisoInicio(int pantalla, char* nick, Usuario *usu);
 
 char* sortearPalabra(int ID_usuario);
-void mostrarPalabraLEDS(char* adivinanza, char** alfabeto);
+int mostrarPalabraLEDS(char* adivinanza, char** alfabeto);
 char** crearAlfabeto(char *fichero, char** alfabeto);
 void guardarPuntuacion(int puntuacion);
 

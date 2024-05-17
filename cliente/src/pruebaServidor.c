@@ -1,5 +1,3 @@
-// servidor.c
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +12,7 @@ int main() {
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
-    char *hello = "Hola desde el servidor";
+    char *verificacion = "Mensaje recibido correctamente";
     int valread;
 
     // Crear el socket
@@ -45,28 +43,28 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    printf("Servidor esperando conexiones...\n");
+
     while(1) {
         // Aceptar conexión entrante
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
             perror("accept");
             exit(EXIT_FAILURE);
         }
-        while ((valread = recv(new_socket, buffer, 1024, 0)) > 0) {
-            // Leer datos del cliente
-            printf("Mensaje del cliente: %s\n", buffer);
-    
-            // Enviar mensaje al cliente
-            send(new_socket, 0, strlen(0), 0);
-            printf("Mensaje enviado al cliente\n");
+        printf("Conexión aceptada.\n");
 
-            // Limpiar el buffer después de procesar el mensaje
-            memset(buffer, 0, sizeof(buffer));
+        // Enviar el mensaje
+        send(new_socket, verificacion, strlen(verificacion), 0);
+        printf("Mensaje enviado al cliente: %s\n", verificacion);
 
-        }
+        // Limpiar el buffer después de procesar el mensaje
+        memset(buffer, 0, sizeof(buffer));
 
         // Cerrar el socket de la conexión cuando se termina de leer
         close(new_socket);
+        printf("Conexión cerrada.\n");
     }
 
+    close(server_fd);
     return 0;
 }

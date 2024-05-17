@@ -922,7 +922,7 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
 
     char *morse = (char*)malloc(indice*sizeof(char)); //FALTA HACER FREE
     printf("%i\n", indice); //Comprobar que el length esta bien
-
+    printf("%i\n", strlen(adivinanza));
     int insertar_palabras = 0;
     for (int i = 0; i < strlen(adivinanza); i++){
         //printf("PASO 1");
@@ -951,17 +951,24 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             }
             //break;
         }
-        morse[insertar_palabras] = ' ';
-        insertar_palabras++;
-        printf("\n");
+        if(insertar_palabras != strlen(adivinanza)){
+            morse[insertar_palabras] = ' ';
+            insertar_palabras++;
+            printf("%i\n", insertar_palabras);
+        }else{
+            morse[insertar_palabras] = '\0';
+            //printf("%i\n", insertar_palabras);
+        }
+        //printf("%i\n", insertar_palabras);
+        //printf("\n");
     }
     
     /*printf("UYFCVBNKYTFDCVBNKIUYG\n");
     for(int i = 0; i<indice; i++){
         printf("%c", morse[i]);
-    }
+    }*/
     printf("AGUACATE\n");
-    printf("%s", morse);*/
+    printf("%s", morse[insertar_palabras]);
 
     /*
     morse[insertar_palabras]= "\0";
@@ -969,7 +976,7 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     printf("%i\n", strlen(morse));
     */
 
-    
+    /*HAIZEA
     //COMUNICACION RASPBERRY
     WSADATA wsa;
     SOCKET sock;
@@ -984,20 +991,21 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
         if (respuesta != NULL) {
             printf("Respuesta recibida: %s\n", respuesta);
         }
-    }*/
-
-    char *respuesta = mandarMensaje(morse, sock);
+    }
+    
+    char *respuesta = mandarMensaje(morse, sock);*/
 
     //FREE
     free(morse);
     morse = NULL;
 
+/*
     if (respuesta != NULL) {
         printf("Respuesta recibida: %s\n", respuesta);
     }
 
     // Cerrar el socket y limpiar Winsock
-    cerrarSocket(sock);
+    cerrarSocket(sock);*/
 }
 
 

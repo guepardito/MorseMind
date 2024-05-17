@@ -899,6 +899,7 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     //int long_morse = strlen(adivinanza)+1;
     //char *morse = (char*)malloc(long_morse*sizeof(char)); //FALTA HACER FREE
     //printf("%i\n", long_morse);
+
     int indice=0;
     for (int i = 0; i < strlen(adivinanza); i++){
         char letra = toupper(adivinanza[i]);
@@ -918,41 +919,58 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             }
         }
     }
+
     char *morse = (char*)malloc(indice*sizeof(char)); //FALTA HACER FREE
-    //printf("%i\n", indice); //Comprobar que el length esta bien
+    printf("%i\n", indice); //Comprobar que el length esta bien
 
     int insertar_palabras = 0;
     for (int i = 0; i < strlen(adivinanza); i++){
+        //printf("PASO 1");
+        //printf("%i\n", strlen(adivinanza));
         char letra = toupper(adivinanza[i]);
         // recorremos el abecedario
-        for (int j = 0; j < 26; j++){
+        for (int j = 0; j < 26; j++){            
             if (letra == alfabeto[j][0]){
                 // imprimimos la traduccion sin la letra original abecedario[0]
-                for (int k = 1; k < strlen(alfabeto[j]) + 1; k++){   
-                    printf("%c", alfabeto[j][k]);
+                for (int k = 1; k < strlen(alfabeto[j]); k++){   
+                    //printf("SIZE: %i\n",strlen(alfabeto[j])); //ESTO ES LA LONGITUD DE LA LETRA + espacio
+                    //printf("%c\n", alfabeto[j][k]);
+                    morse[insertar_palabras] = alfabeto[j][k];
+                    /*printf("L");
                     //morse[insertar_palabras]=alfabeto[j][k];/////////////
-                    morse[insertar_palabras]="A";
+                    morse[insertar_palabras]=alfabeto[j][k];
                     //printf("%i", insertar_palabras);
-                    //printf("%c", morse[insertar_palabras]);
+                    //printf("%c", morse[insertar_palabras]);*/
                     insertar_palabras++;
                 }
-                printf(" ");
+                //printf(" ");
                 //printf("%i", insertar_palabras);
                 //morse[insertar_palabras]=' ';/////////////////////////////////////////////////////////////////////////////
-                morse[insertar_palabras]="B";
-                insertar_palabras++;
+                //morse[insertar_palabras]='_';
+                //printf("%s", morse[insertar_palabras]);
             }
-            break;
+            //break;
         }
+        morse[insertar_palabras] = ' ';
+        insertar_palabras++;
+        printf("\n");
     }
-    /*for(int i = 0; i<indice; i++){
-        printf("%c", morse[i]);
-    }*/
-
     
+    /*printf("UYFCVBNKYTFDCVBNKIUYG\n");
+    for(int i = 0; i<indice; i++){
+        printf("%c", morse[i]);
+    }
+    printf("AGUACATE\n");
+    printf("%s", morse);*/
+
+    /*
     morse[insertar_palabras]= "\0";
     printf("%s\n", morse);
     printf("%i\n", strlen(morse));
+    */
+
+    
+    //COMUNICACION RASPBERRY
     WSADATA wsa;
     SOCKET sock;
     struct sockaddr_in server;
@@ -969,7 +987,11 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     }*/
 
     char *respuesta = mandarMensaje(morse, sock);
-    
+
+    //FREE
+    free(morse);
+    morse = NULL;
+
     if (respuesta != NULL) {
         printf("Respuesta recibida: %s\n", respuesta);
     }

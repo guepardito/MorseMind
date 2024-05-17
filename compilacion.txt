@@ -1,0 +1,1 @@
+gcc -o main.exe main.c pantallas.c servidorCliente.c sqlite3.c sqlUtils.c utils.c pruebaCliente.c -lws2_32

@@ -9,32 +9,34 @@
 #define SERVER_ADDR "192.168.1.16" // Dirección IP de tu Raspberry Pi
 
 int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
-    printf("Inicializando Winsock...\n");
+    //printf("Inicializando Winsock...\n");
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
-        printf("Error al iniciar Winsock: %d\n", WSAGetLastError());
+        printf("ERROR: No se ha podido conectar con el servidor");
+        //printf("Error al iniciar Winsock: %d\n", WSAGetLastError());
         return 1;
     }
 
-    printf("Creando socket...\n");
+    //printf("Creando socket...\n");
     if ((*sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-        printf("No se pudo crear el socket: %d\n", WSAGetLastError());
+        printf("ERROR: No se ha podido conectar con el servidor");
+        //printf("No se pudo crear el socket: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
-    printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...\n");
     server->sin_addr.s_addr = inet_addr(SERVER_ADDR);
     server->sin_family = AF_INET;
     server->sin_port = htons(PORT);
 
-    printf("Conectando al servidor...\n");
+    //printf("Conectando al servidor...\n");
     if (connect(*sock, (struct sockaddr *)server, sizeof(*server)) < 0) {
-        printf("Error al conectar con el servidor: %d\n", WSAGetLastError());
+        printf("ERROR: No se ha podido conectar con el servidor");
+        //printf("Error al conectar con el servidor: %d\n", WSAGetLastError());
         closesocket(*sock);
         WSACleanup();
         return 1;
     }
 
-    printf("Conectado al servidor\n");
+    //printf("Conectado al servidor\n");
     return 0;
 }
 

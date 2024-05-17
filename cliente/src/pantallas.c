@@ -895,11 +895,6 @@ char* sortearPalabra(int ID_Usuario){ //recibir usuario para acceder a la base d
 
 
 void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
-    // recorremos cada letra de la palabra
-    //int long_morse = strlen(adivinanza)+1;
-    //char *morse = (char*)malloc(long_morse*sizeof(char)); //FALTA HACER FREE
-    //printf("%i\n", long_morse);
-
     int indice=0;
     for (int i = 0; i < strlen(adivinanza); i++){
         char letra = toupper(adivinanza[i]);
@@ -910,17 +905,15 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
                 // imprimimos la traduccion sin la letra original abecedario[0]
                 for (int k = 1; k < strlen(alfabeto[j]) + 1; k++){   
                     printf("%c", alfabeto[j][k]);
-                    //morse[indice]=alfabeto[j][k];
                     indice++;
                 }
                 printf(" ");
-                //morse[indice]="_";/////////////////////////////////////////////////////////////////////////////
                 break;
             }
         }
     }
 
-    char *morse = (char*)malloc(indice*sizeof(char)); //FALTA HACER FREE
+    char *morse = (char*)malloc(indice*sizeof(char));
     printf("%i\n", indice); //Comprobar que el length esta bien
     printf("%i\n", strlen(adivinanza));
     int insertar_palabras = 0;
@@ -952,8 +945,7 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
         }
     }
     
-    printf("AGUACATE\n");
-    printf("%s", morse[insertar_palabras]);
+    printf("%s", morse);
     
     //COMUNICACION RASPBERRY
     WSADATA wsa;
@@ -961,28 +953,21 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     struct sockaddr_in server;
 
     // Inicializar Winsock y crear el socket
-    crearSocket(wsa, &sock, &server);
-    
-    /*for(int i = 0; i<indice; i++){
-        respuesta = mandarMensaje(morse[i], sock);
+    int socket = crearSocket(wsa, &sock, &server);
+    //Si no ocurre ningun error al conectar con el servidor
+    if(socket != 1){
+        char *respuesta = mandarMensaje(morse, sock);
         if (respuesta != NULL) {
             printf("Respuesta recibida: %s\n", respuesta);
         }
-    }*/
-    
-    char *respuesta = mandarMensaje(morse, sock);
-
+        // Cerrar el socket y limpiar Winsock
+        cerrarSocket(sock);
+    }else{ //Error al conectar con el servidor, no se inicia la partida
+        return;
+    }
     //FREE
     free(morse);
     morse = NULL;
-
-
-    if (respuesta != NULL) {
-        printf("Respuesta recibida: %s\n", respuesta);
-    }
-
-    // Cerrar el socket y limpiar Winsock
-    cerrarSocket(sock);
 }
 
 

@@ -14,7 +14,7 @@ int main() {
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
-    char *hello = "Hola desde el servidor";
+    char *verificacion = "Mensaje recibido correctamente";
     int valread;
 
     // Crear el socket
@@ -56,7 +56,7 @@ int main() {
             printf("Mensaje del cliente: %s\n", buffer);
     
             // Enviar mensaje al cliente
-            send(new_socket, 0, strlen(0), 0);
+            send(new_socket, verificacion, strlen(verificacion), 0);
             printf("Mensaje enviado al cliente\n");
 
             // Limpiar el buffer después de procesar el mensaje

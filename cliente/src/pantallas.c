@@ -927,12 +927,12 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
                 break;
             }
         }
-        
+        indice++;
     }
 
     char *morse = (char*)malloc(indice*sizeof(char));
-    printf("%i\n", indice); //Comprobar que el length esta bien
-    printf("%i\n", strlen(adivinanza));
+    //printf("%i\n", indice); //Comprobar que el length esta bien
+    //printf("%i\n", strlen(adivinanza));
     int insertar_palabras = 0;
 
 //Una vez calculada cual va a ser la longitud del morse, insertar cada caracter
@@ -951,17 +951,15 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
                 }
             }
         }
-        //En caso de que no sea el indice '\0', se insertaran espacios
-        if(insertar_palabras != strlen(adivinanza)){
+        //Una vez se haya recorrido el caracter en morse, se inserta un espacio
+        if (i < strlen(adivinanza) - 1) {
             morse[insertar_palabras] = ' ';
             insertar_palabras++;
-            printf("%i\n", insertar_palabras);
-        //En caso contrario, se inserta el final
-        }else{
-            morse[insertar_palabras] = '\0';
         }
     }
-    printf("%s", morse);
+    //Última inserción \0
+    morse[insertar_palabras] = '\0';
+    
     
     //COMUNICACION RASPBERRY
     WSADATA wsa;
@@ -974,8 +972,11 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     //Si no ocurre ningun error al conectar con el servidor
     if(socket == 0){
         char *respuesta = mandarMensaje(morse, sock);
-        if (respuesta != NULL) {
-            printf("Respuesta recibida: %s\n", respuesta);
+        if (respuesta == NULL) {
+            //Si ha ocurrido algun error, el mismo error se puede poner en la variable de socket para que se
+            //corte la conexion y el usuario vuelva a entrar
+            printf("Error con el servidor");
+            error = 1;            
         }
         // Cerrar el socket y limpiar Winsock
         cerrarSocket(sock);

@@ -41,25 +41,26 @@ int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
 }
 
 char* mandarMensaje(char* morse, SOCKET sock) {
-    char server_reply[2000];
+    char server_reply[2000]; // Cambiado de char *server_reply[2000] a char server_reply[2000]
     int recv_size;
 
     if (send(sock, morse, strlen(morse), 0) < 0) {
-        printf("Fallo al enviar el mensaje\n");
+        //printf("Fallo al enviar el mensaje\n");
         return NULL;
     }
 
-    printf("Mensaje enviado: %s\n", morse);
+    //printf("Mensaje enviado: %s\n", morse);
 
     if ((recv_size = recv(sock, server_reply, 2000, 0)) == SOCKET_ERROR) {
-        printf("Error al recibir respuesta\n");
+        //printf("Error al recibir respuesta\n");
         return NULL;
     } else {
         server_reply[recv_size] = '\0';
-        printf("Respuesta del servidor: %s\n", server_reply);
-        return server_reply;
+        //printf("Respuesta del servidor: %s\n", server_reply);
+        return strdup(server_reply); //Copiar y devolver la respuesta utilizando strdup para evitar problemas de puntero
     }
 }
+
 
 void cerrarSocket(SOCKET sock) {
     closesocket(sock);

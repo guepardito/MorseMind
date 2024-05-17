@@ -929,34 +929,30 @@ void mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             if (letra == alfabeto[j][0]){
                 // imprimimos la traduccion sin la letra original abecedario[0]
                 for (int k = 1; k < strlen(alfabeto[j]) + 1; k++){   
-                    //printf("%c", alfabeto[j][k]);
-                    morse[insertar_palabras]=alfabeto[j][k];
+                    printf("%c", alfabeto[j][k]);
+                    //morse[insertar_palabras]=alfabeto[j][k];/////////////
+                    morse[insertar_palabras]="A";
                     //printf("%i", insertar_palabras);
                     //printf("%c", morse[insertar_palabras]);
                     insertar_palabras++;
                 }
-                //printf(" ");
-                printf("%i", insertar_palabras);
-                morse[insertar_palabras]=' ';/////////////////////////////////////////////////////////////////////////////
-                
-                break;
+                printf(" ");
+                //printf("%i", insertar_palabras);
+                //morse[insertar_palabras]=' ';/////////////////////////////////////////////////////////////////////////////
+                morse[insertar_palabras]="B";
+                insertar_palabras++;
             }
+            break;
         }
     }
-    //printf("J");
-    morse[indice] = '\0';
-    for(int i = 0; i<indice; i++){
+    /*for(int i = 0; i<indice; i++){
         printf("%c", morse[i]);
-    }
-    printf("HJVV\n");
-    printf("%s", morse);
+    }*/
 
-    printf("FUNCIONA");
-    //printf("%s\n", morse);
-    printf("ZZZZZZZZZZZZZZZZZZZZ");
     
-    printf("\n");
-    //morse[indice]= "\0";
+    morse[insertar_palabras]= "\0";
+    printf("%s\n", morse);
+    printf("%i\n", strlen(morse));
     WSADATA wsa;
     SOCKET sock;
     struct sockaddr_in server;

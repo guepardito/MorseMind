@@ -8,6 +8,7 @@
 #include "sqlite3.h"
 #include "time.h"
 #include "pruebaCliente.h"
+#include <time.h>
 
 
 #include <stdio.h>
@@ -22,11 +23,10 @@
 
 
 
-
 char* palabras_usadas[7];
 char letras_conocidas[15];
 char pista[5];
-
+FILE *logFich;
 
 void logo()
 {
@@ -1052,4 +1052,35 @@ char** crearAlfabeto(char *fichero, char** alfabeto){
     fclose(archivo);
 
 return alfabeto;
+}
+
+void iniciarLog(const char *fichero) {
+    logFich = fopen(fichero, "a");
+    if (logFich == NULL) {
+        fprintf(stderr, "Error al abrir el fichero log %s\n", fichero);
+        exit(1);
+    }
+}
+
+void escribirLog(const char *mensaje) {
+    if (logFich == NULL) {
+        fprintf(stderr, "No se ha inicializado el logger\n");
+        return;
+    }
+
+    time_t hora;
+    time(&hora);
+    struct tm *local = localtime(&hora);
+
+    fprintf(logFich, "[%02d-%02d-%04d %02d:%02d:%02d] %s\n",
+            local->tm_mday, local->tm_mon + 1, local->tm_year + 1900,
+            local->tm_hour, local->tm_min, local->tm_sec, mensaje);
+    fflush(logFich);
+}
+
+void cerrarLog() {
+    if (logFich != NULL) {
+        fclose(logFich);
+        logFich = NULL;
+    }
 }

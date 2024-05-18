@@ -24,5 +24,9 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto);
 char** crearAlfabeto(char *fichero, char** alfabeto);
 void guardarPuntuacion(int puntuacion);
 
+void iniciarLog(const char *fichero);
+void escribirLog(const char *mensaje);
+void cerrarLog();
+
 
 #endif

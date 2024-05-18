@@ -42,18 +42,21 @@ void logo()
 
 void cerrar()
 {
+    void cerrarLog();
     exit(-1);
 }
 
 void pantallaInicio()
 {
-  system("cls");
+    iniciarLog("loggerActividad.log");
+    system("cls");
     logo();
     printf("                  I N I C I O                    \n");
     printf("=================================================\n");
     printf("1. Registro\n");
     printf("2. LogIn\n");
     printf("3. Cerrar\n");
+    escribirLog("Se ha mostrado la pantalla de inicio");
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
@@ -77,6 +80,8 @@ void pantallaRegistro()
     logo();
     printf("                R E G I S T R O                  \n");
     printf("=================================================\n");
+
+    escribirLog("El usuario quiere registrarse");
 
     char nombre[15];
     printf("Nombre: ");
@@ -125,6 +130,7 @@ void pantallaRegistro()
             
             int resultado=crearUsuario(usuarioNuevo);
             if(resultado==SQLITE_OK){
+                escribirLog("Usuario registrado");
                 printf("Pulsa cualquier tecla para continuar: ");
                 scanf("%s", opc);
                 pantallaInicio();
@@ -133,6 +139,7 @@ void pantallaRegistro()
             usuarioLeido=NULL;
         }
         else{
+            escribirLog("Error al registrar");
             printf("No has podido ser registrado, ese usuario ya existe. Quieres volver a intentarlo? \n");
             printf("1. Si\n");
             printf("2. No\n");
@@ -152,6 +159,7 @@ void pantallaRegistro()
     }
     else
     {
+        escribirLog("Error al registrar");
         printf("No has podido ser registrado. Quieres volver a intentarlo? \n");
         printf("1. Si\n");
         printf("2. No\n");
@@ -176,6 +184,8 @@ void pantallaLogin()
     printf("                  L O G  I N                     \n");
     printf("=================================================\n");
 
+    escribirLog("El usuario quiere iniciar sesion");
+
     char nick[15];
     printf("Nickname: ");
     scanf("%s", nick);
@@ -187,11 +197,13 @@ void pantallaLogin()
     
         if(usu!=NULL){
             if (strcmp((*usu).Contrasenya, contrasena)==0){
+                escribirLog("Sesion iniciada");
                 pantallaPrincipal(nick, usu); 
             }
             else{
                 free(usu);
                 usu=NULL;
+                escribirLog("No se ha podido iniciar sesión");
                 printf("No has podido iniciar sesion. Quieres volver a intentarlo? \n");
                 printf("1. Si\n");
                 printf("2. No\n");
@@ -212,6 +224,7 @@ void pantallaLogin()
         else{
             free(usu);
             usu=NULL;
+            escribirLog("No se ha podido iniciar sesion");
             printf("No has podido iniciar sesion. Quieres volver a intentarlo? \n");
             printf("1. Si\n");
             printf("2. No\n");
@@ -244,6 +257,7 @@ void pantallaPrincipal(char *nick, Usuario* usuario)
     printf("2. Mostrar ranking\n");
     printf("3. Ver traducciones hechas\n");
     printf("4. Atras\n");
+    escribirLog("Pantalla principal mostrada");
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
@@ -279,7 +293,7 @@ void pantallaCrearAlfabeto(char *nick, Usuario *usu)
     printf("=================================================\n");
     printf("1. Codigo morse internacional\n");
     printf("2. Codigo morse americano\n");
-    
+    escribirLog("Se muestra la pantalla de idioma");
     char opc[2];
     printf("Introduzca la opcion deseada:");
     scanf("%s", opc);
@@ -288,6 +302,7 @@ void pantallaCrearAlfabeto(char *nick, Usuario *usu)
 
     if (*opc == '1') 
     {
+        escribirLog("Idioma internacional seleccionado");
         system("cls");
         alfabeto= crearAlfabeto("Traducciones/internacional.txt", alfabeto);
 
@@ -319,6 +334,7 @@ void pantallaCrearAlfabeto(char *nick, Usuario *usu)
     }
     else if (*opc == '2')
     {
+        escribirLog("Idioma americano seleccionado");
         alfabeto= crearAlfabeto("Traducciones/americano.txt", alfabeto);
         system("cls");
 
@@ -356,6 +372,7 @@ void pantallaCrearAlfabeto(char *nick, Usuario *usu)
 
 int displayPantallaJuego(int intentos_restantes, char** palabras_usadas, char* letras_conocidas, char* pista, int puntuacion, int fallado, int mal_input, int pista_mostrada, char** alfabeto, char* adivinanza){
     int error = mostrarPalabraLEDS(adivinanza, alfabeto); //se imprime por pantalla. Si devuelve 1, ha habido error
+    escribirLog("El usuario ha empezado a jugar");
     if(error == 1){ //HA OCURRIDO ERROR
         return error;
     }else{
@@ -459,6 +476,7 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                     printf("              E N H O R A B U E N A !             \n");
                     printf("=================================================\n\n");
                     printf("Has acertado!\n");
+                    escribirLog("EL usuario ha acertado la palabra");
                     printf("Puntuacion: %i\n", puntuacion);
                     (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
                     (*nuevaPartida).Intentos= intentos_restantes;
@@ -540,6 +558,7 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                         printf("=================================================\n\n");
                         printf("Parece que te has quedado sin intentos, es una pena!\n");
                         puntuacion=-10;
+                        escribirLog("El usuario se ha quedado sin intentos");
                         printf("Puntuacion: %i\n", puntuacion);
 
                         (*nuevaPartida).ID_Usuario= (*usu).ID_Usuario;
@@ -595,6 +614,7 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                     int encontrada=0;
 
                     printf("\n Has solicitado una pista.\n");
+                    escribirLog("Se ha solicitado una pista");
 
                     mal_input=0;
                     
@@ -677,6 +697,8 @@ void pantallaRanking(char *nick, Usuario *usu)
 
     hacerYImprimirRankings();
 
+    escribirLog("El usuario quiere ver el ranking");
+
     printf("Opciones:\n");
     printf("1. Mostrar mis estadisticas\n");
     printf("2. Atras\n");
@@ -699,6 +721,7 @@ void pantallaEstadisticas(char *nick, Usuario *usu)
         free(misEstadisticas);
         misEstadisticas=NULL;
         printf("\nNo tienes estadisticas disponibles para exportar, juega antes de intentarlo de nuevo!\n");
+        escribirLog("No hay estadisticas");
         printf("Pulsa cualquier tecla para continuar: ");
         char opc[2];
         scanf("%s", opc);
@@ -717,6 +740,8 @@ void pantallaEstadisticas(char *nick, Usuario *usu)
     printf("=================================================\n\n");
     printf("Porcentaje de aciertos: %.2f%%\n", porcentaje);
     printf("Numero de partidas jugadas: %i\n\n", total);
+
+    escribirLog("El usuario quiere ver sus estadisticas");
         
     printf("Opciones:\n");
     printf("1. Exportar mis estadisticas a fichero\n");
@@ -731,6 +756,7 @@ void pantallaEstadisticas(char *nick, Usuario *usu)
         misEstadisticas=NULL;
         
         printf("Ya se han exportado tus datos al fichero! Muchas gracias! \nIntroduce cualquier letra para continuar: ");
+        escribirLog("Se han exportado los datos al fichero");
         scanf("%s", opc);
         
         pantallaAvisoPPrincipal(41, nick, usu, NULL);
@@ -750,6 +776,7 @@ void pantallaTraducciones(char *nick, Usuario *usu)
     printf("            T R A D U C C I O N E S              \n");
     printf("=================================================\n\n");
     obtenerTraducciones(nick, usu);
+    escribirLog("EL usuario quiere ver sus traducciones");
     char opc[2];
     printf("Para ir atras pulsa 1: ");
     scanf("%s", opc);
@@ -776,6 +803,7 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
     fflush(stdin);
     if (*opc == '1')
     {
+        escribirLog("El usuario se ha rendido");
         puntuacion=-10;
         nuevaPartida->Resultado = "rendido";
         nuevaPartida->Intentos = intentos_restantes;
@@ -816,6 +844,7 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
     else if (*opc == '2')
     {   
       system("cls");
+      escribirLog("El usuario ha querido rendirse, pero ha vuelto al juego");
         pantallaJuego(nick, intentos_restantes, palabras_usadas, letras_conocidas, pista, puntuacion, 0, 0, 0, alfabeto, nuevaPartida, usu, adivinanza); 
     }
 }
@@ -834,7 +863,9 @@ void pantallaAvisoPPrincipal(int pantalla, char *nick, Usuario *usu, char** alfa
     scanf("%s", opc);
     fflush(stdin);
     if (*opc == '1')
-    {   if( pantalla == 4 | pantalla==41){
+    {
+            escribirLog("EL usuario quiere volver a la pantalla principal");
+           if( pantalla == 4 | pantalla==41){
             pantallaPrincipal(nick, usu);
         }
     }
@@ -863,7 +894,8 @@ void pantallaAvisoInicio(int pantalla, char *nick, Usuario *usu)
     scanf("%s", opc);
     fflush(stdin);
     if (*opc == '1')
-    {   if (pantalla==2){
+    {   escribirLog("EL usuario quiere volver a la pantalla de inicio");
+        if (pantalla==2){
             free(usu);
             usu=NULL;
             pantallaInicio();
@@ -895,6 +927,7 @@ void pantallaAvisoCierre()
     if (*opc == '1')
     {
         printf("Hasta la proxima!");
+        escribirLog("El programa se va a cerrar");
         cerrar();
     }
     else if (*opc == '2')
@@ -911,6 +944,7 @@ char* sortearPalabra(int ID_Usuario){ //recibir usuario para acceder a la base d
 
 
 int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
+    escribirLog("Se ha ordenado enviar la palabra a los leds");
     int indice=0;
     for (int i = 0; i < strlen(adivinanza); i++){
         char letra = toupper(adivinanza[i]);
@@ -968,6 +1002,7 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
 
     // Inicializar Winsock y crear el socket
     int socket = crearSocket(wsa, &sock, &server);
+    escribirLog("Se va a crear el socket de comunicacion");
     int error = socket; //Valor para avisar al resto de funciones si se ha podido conectar o no al servidor
     //Si no ocurre ningun error al conectar con el servidor
     if(socket == 0){

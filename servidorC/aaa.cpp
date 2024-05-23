@@ -3,16 +3,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "ws2811.h"
-#include "version.h"
-#include "rpihw.h"
-#include "pwm.h"
-#include "pcm.h"
-#include "morse.h"
-#include "gpio.h"
-#include "dma.h"
-#include "mailbox.h"
-#include "clk.h"
+#include "interop.h"
 
 
 #define PORT 8080

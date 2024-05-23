@@ -50,8 +50,8 @@ static char VERSION[] = "XX.YY.ZZ";
 #include "gpio.h"
 #include "pwm.h"
 #include "version.h"
-
 #include "ws2811.h"
+#include "morse.h"
 
 
 #define ARRAY_SIZE(stuff) (sizeof(stuff) / sizeof(stuff[0]))

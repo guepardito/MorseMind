@@ -50,6 +50,7 @@ static char VERSION[] = "XX.YY.ZZ";
 #include "gpio.h"
 #include "pwm.h"
 #include "version.h"
+#include "morse.h"
 
 #include "ws2811.h"
 
@@ -433,7 +434,7 @@ void display_perder() {
 }
 
 
-
+/*
 //main
 int main(int argc, char *argv[]) {
     ws2811_return_t ret;
@@ -479,4 +480,4 @@ int main(int argc, char *argv[]) {
 
     printf("\n");
     return ret;
-}
+}*/

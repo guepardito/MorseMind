@@ -501,6 +501,10 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                     free(alfabeto);
                     alfabeto=NULL;
 
+                    enviarResultadoLeds('1'); //////////////////////////////////////gestionar envio a leds
+
+
+
                     printf("Quieres jugar otra vez?\n");
                     printf("1. Si, quiero jugar otra partida!\n");
                     printf("2. No, quiero volver a la pantalla principal\n");
@@ -583,6 +587,9 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                         }
                         free(alfabeto);
                         alfabeto=NULL;
+
+
+                        enviarResultadoLeds('0'); //////////////////////////////////////gestionar envio a leds
 
                         printf("Quieres jugar otra vez?\n");
                         printf("1. Si, quiero jugar otra partida!\n");
@@ -827,7 +834,7 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
         }
         free(alfabeto);
         alfabeto=NULL;
-
+        enviarResultadoLeds('0'); //////////////////////////////////////gestionar envio a leds
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Quieres intentarlo otra vez?\n");
         printf("1.Si, quiero volver a jugar!\n");
         printf("2.No, lo intentare mas tarde.\n");
@@ -1024,7 +1031,34 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     return error;
 }
 
+int enviarResultadoLeds(char resultado){
+    
+    //COMUNICACION RASPBERRY
+    WSADATA wsa;
+    SOCKET sock;
+    struct sockaddr_in server;
 
+    // Inicializar Winsock y crear el socket
+    int socket = crearSocket(wsa, &sock, &server);
+    escribirLog("Se va a crear el socket de comunicacion");
+    int error = socket; //Valor para avisar al resto de funciones si se ha podido conectar o no al servidor
+    //Si no ocurre ningun error al conectar con el servidor
+    if(socket == 0){
+        char *respuesta = mandarMensaje(resultado, sock);
+        if (respuesta == NULL) {
+            //Si ha ocurrido algun error, el mismo error se puede poner en la variable de socket para que se
+            //corte la conexion y el usuario vuelva a entrar
+            printf("Error con el servidor");
+            error = 1;            
+        }
+        // Cerrar el socket y limpiar Winsock
+        cerrarSocket(sock);
+    }
+
+    //Error al conectar con el servidor, no se inicia la partida -> ERROR = 1
+
+    return error;
+}
 
 
 char** crearAlfabeto(char *fichero, char** alfabeto){

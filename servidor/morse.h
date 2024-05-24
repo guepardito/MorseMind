@@ -19,6 +19,7 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811);
 void display_morse_string(const char* morse_string);
 void display_ganar();
 void display_perder();
+void display_apagar();
 }
 
 #endif

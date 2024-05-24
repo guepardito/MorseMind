@@ -89,6 +89,9 @@ int main() {
       else if (strcmp(buffer,"0")==0){
         display_perder();
       }
+      else if (strcmp(buffer,"2")==0){
+        display_apagar();
+      }
       else{
         display_morse_string(buffer);
       }

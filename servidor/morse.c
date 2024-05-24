@@ -166,7 +166,7 @@ ws2811_led_t dotcolors[] = {
     0x00200010, // pink
     0x01E3B00A, // azul
     0x0100B00A, // Verde
-    0x000000FF //Rojo
+    0x00000000, //Rojo
 };
 
 ws2811_led_t dotcolors_rgbw[] = {
@@ -467,7 +467,7 @@ void display_morse_string(const char* morse_string) {
 
     
     //ws2811_fini(&ledstring);
-    printf("JUEGA");
+    printf("JUEGA\n");
 }
 
 void display_ganar() {
@@ -523,7 +523,64 @@ void display_ganar() {
     
     
     
-    printf("GANA");
+    printf("GANA\n");
+    //return ret;
+}
+
+void display_apagar() {
+    ws2811_return_t ret;
+
+    sprintf(VERSION, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO);
+
+    //parseargs(argc, argv, &ledstring);
+
+    matrix = malloc(sizeof(ws2811_led_t) * width * height);
+
+    setup_handlers();
+
+    //Asegura que la biblioteca ws2811, que se encarga de controlar los LEDs
+    if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS) {
+        fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(ret));
+        //return ret;
+    }
+    
+    
+    matrix_clear(); // Limpiar la matriz al inicio
+    int a = 0;
+    while (a<400) {
+      int x, y;
+      for (y = 0; y < height; y++) {
+          for (x = 0; x < width; x++) {
+              // Enciende cada LED en rojo
+              matrix[y * width + x] = dotcolors[10]; // Color verde
+          }
+      }
+      
+      
+      if (clear_on_exit) {
+          matrix_clear();
+          matrix_render();
+          ws2811_render(&ledstring);
+      
+    }
+      
+    matrix_render();
+    // Renderizamos los cambios
+    ws2811_render(&ledstring);
+      
+      if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS) {
+        fprintf(stderr, "ws2811_render failed: %s\n",
+                ws2811_get_return_t_str(ret));
+        break;
+        }
+    a++;
+
+    }
+      ws2811_fini(&ledstring);
+    
+    
+    
+    printf("CIERRA\n");
     //return ret;
 }
 
@@ -580,58 +637,7 @@ void display_perder() {
     
     
     
-    printf("PIERDE");
+    printf("PIERDE\n");
     //return ret;
 }
 
-
-
-/*
-
-//main
-
-int main(int argc, char *argv[]) {
-    ws2811_return_t ret;
-
-    sprintf(VERSION, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO);
-
-    parseargs(argc, argv, &ledstring);
-
-    matrix = malloc(sizeof(ws2811_led_t) * width * height);
-
-    setup_handlers();
-
-    //Asegura que la biblioteca ws2811, que se encarga de controlar los LEDs
-    if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS) {
-        fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(ret));
-        return ret;
-    }
-    const char* morse_string = "-.. -- -.";
-    while (running) {
-        display_ganar(); //FUNCIONA
-        //display_perder(); //FUNCIONA
-        //display_morse_string(morse_string); //FUNCIONA
-        matrix_render();
-
-
-        if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS) {
-        fprintf(stderr, "ws2811_render failed: %s\n",
-                ws2811_get_return_t_str(ret));
-        break;
-        }
-
-        // 15 frames /sec
-        usleep(1000000 / 15);
-    }
-
-    if (clear_on_exit) {
-        matrix_clear();
-        matrix_render();
-        ws2811_render(&ledstring);
-    }
-
-    ws2811_fini(&ledstring);
-
-    printf("\n");
-    return ret;
-}*/

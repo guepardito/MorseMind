@@ -513,12 +513,14 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                     scanf("%s", opc);
                     if (*opc == '1')
                     {
-                    system("cls");
+                        enviarResultadoLeds("2");
+                        system("cls");
                         pantallaCrearAlfabeto(nick, usu);
                     } 
                     else if(*opc == '2')
                     {
-                    system("cls");
+                        enviarResultadoLeds("2");
+                        system("cls");
                         pantallaPrincipal(nick, usu);
                     }
                 }
@@ -598,12 +600,14 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                         scanf("%s", opc);
                         if (*opc == '1')
                         {
-                        system("cls");
+                            enviarResultadoLeds("2");
+                            system("cls");
                             pantallaCrearAlfabeto(nick, usu);
                         } 
                         else if(*opc == '2')
                         {
-                        system("cls");
+                            enviarResultadoLeds("2");
+                            system("cls");
                             pantallaPrincipal(nick, usu);
                         }
                     }
@@ -842,9 +846,11 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
         printf("Que quieres hacer? ");
         scanf("%s", opc);
         if(*opc=='1'){
+            enviarResultadoLeds("2");
             pantallaCrearAlfabeto(nick, usu);
         }
         else{
+            enviarResultadoLeds("2");
             pantallaPrincipal(nick, usu);
         }
     }

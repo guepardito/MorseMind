@@ -376,6 +376,8 @@ int displayPantallaJuego(int intentos_restantes, char** palabras_usadas, char* l
     if(error == 1){ //HA OCURRIDO ERROR
         return error;
     }else{
+        system("cls");
+        logo();
         printf("                 A D I V I N A !                 \n");
         printf("=================================================\n\n");
         

@@ -17,7 +17,7 @@
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #define PORT 8080
-#define SERVER_ADDR "192.168.1.16" // Dirección IP de tu Raspberry Pi
+#define SERVER_ADDR "10.207.0.42"//"192.168.1.16" // Dirección IP de tu Raspberry Pi
 
 
 
@@ -500,7 +500,6 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
 
                     free(alfabeto);
                     alfabeto=NULL;
-
                     enviarResultadoLeds('1'); //////////////////////////////////////gestionar envio a leds
 
 
@@ -587,7 +586,6 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                         }
                         free(alfabeto);
                         alfabeto=NULL;
-
 
                         enviarResultadoLeds('0'); //////////////////////////////////////gestionar envio a leds
 
@@ -835,6 +833,7 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
         free(alfabeto);
         alfabeto=NULL;
         enviarResultadoLeds('0'); //////////////////////////////////////gestionar envio a leds
+
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Quieres intentarlo otra vez?\n");
         printf("1.Si, quiero volver a jugar!\n");
         printf("2.No, lo intentare mas tarde.\n");

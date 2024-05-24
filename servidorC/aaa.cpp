@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 
 #include "interop.h"
-
+#include "morse.h"
 
 #define PORT 8080
 

@@ -28,5 +28,6 @@ void iniciarLog(const char *fichero);
 void escribirLog(const char *mensaje);
 void cerrarLog();
 
+int enviarResultadoLeds(char resultado);
 
 #endif

@@ -6,7 +6,7 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define PORT 8080
-#define SERVER_ADDR "192.168.1.16" // Dirección IP de tu Raspberry Pi
+#define SERVER_ADDR "10.207.0.42" // Dirección IP de tu Raspberry Pi
 
 int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
     //printf("Inicializando Winsock...\n");

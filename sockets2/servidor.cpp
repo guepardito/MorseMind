@@ -2,18 +2,19 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "string.h"
 
 #include "ws2811.h"
+#include "morse.h"
 #include "version.h"
 #include "rpihw.h"
 #include "pwm.h"
 #include "pcm.h"
-#include "morse.h"
+
 #include "gpio.h"
 #include "dma.h"
 #include "mailbox.h"
 #include "clk.h"
-
 
 #define PORT 8080
 
@@ -71,10 +72,10 @@ int main() {
       }
       std::cout << "Mensaje del cliente: " << buffer << std::endl; // en vez de mandar esto, llamar a leds
  
-      if (buffer[0]=='1'){
+      if (strcmp(buffer,"1")==0){
         display_ganar();
       }
-      else if (buffer[0]=='0'){
+      else if (strcmp(buffer,"0")==0){
         display_perder();
       }
       else{

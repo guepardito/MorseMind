@@ -500,7 +500,7 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
 
                     free(alfabeto);
                     alfabeto=NULL;
-                    enviarResultadoLeds('1'); //////////////////////////////////////gestionar envio a leds
+                    enviarResultadoLeds("1"); //////////////////////////////////////gestionar envio a leds
 
 
 
@@ -587,7 +587,7 @@ void pantallaJuego(char *nick, int intentos_restantes, char** palabras_usadas, c
                         free(alfabeto);
                         alfabeto=NULL;
 
-                        enviarResultadoLeds('0'); //////////////////////////////////////gestionar envio a leds
+                        enviarResultadoLeds("0"); //////////////////////////////////////gestionar envio a leds
 
                         printf("Quieres jugar otra vez?\n");
                         printf("1. Si, quiero jugar otra partida!\n");
@@ -832,7 +832,7 @@ void pantallaRendir(char *nick, int intentos_restantes, char** palabras_usadas, 
         }
         free(alfabeto);
         alfabeto=NULL;
-        enviarResultadoLeds('0'); //////////////////////////////////////gestionar envio a leds
+        enviarResultadoLeds("0"); //////////////////////////////////////gestionar envio a leds
 
         printf("Es una pena, quiza logres adivinar la palabra en la siguiente. Quieres intentarlo otra vez?\n");
         printf("1.Si, quiero volver a jugar!\n");
@@ -960,10 +960,10 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             if (letra == alfabeto[j][0]){
                 // imprimimos la traduccion sin la letra original abecedario[0]
                 for (int k = 1; k < strlen(alfabeto[j]) + 1; k++){   
-                    printf("%c", alfabeto[j][k]);
+                    //printf("%c", alfabeto[j][k]);
                     indice++;
                 }
-                printf(" ");
+                //printf(" ");
                 break;
             }
         }
@@ -1017,7 +1017,7 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
             //Si ha ocurrido algun error, el mismo error se puede poner en la variable de socket para que se
             //corte la conexion y el usuario vuelva a entrar
             printf("Error con el servidor");
-            error = 1;            
+            error = 1;          
         }
         // Cerrar el socket y limpiar Winsock
         cerrarSocket(sock);
@@ -1030,7 +1030,7 @@ int mostrarPalabraLEDS(char* adivinanza, char** alfabeto){
     return error;
 }
 
-int enviarResultadoLeds(char resultado){
+int enviarResultadoLeds(char *resultado){
     
     //COMUNICACION RASPBERRY
     WSADATA wsa;
@@ -1038,6 +1038,7 @@ int enviarResultadoLeds(char resultado){
     struct sockaddr_in server;
 
     // Inicializar Winsock y crear el socket
+
     int socket = crearSocket(wsa, &sock, &server);
     escribirLog("Se va a crear el socket de comunicacion");
     int error = socket; //Valor para avisar al resto de funciones si se ha podido conectar o no al servidor

@@ -1,4 +1,4 @@
- #ifndef _PANTALLAS_H_
+#ifndef _PANTALLAS_H_
 #define _PANTALLAS_H_
 #include "sqlUtils.h"
 
@@ -28,6 +28,6 @@ void iniciarLog(const char *fichero);
 void escribirLog(const char *mensaje);
 void cerrarLog();
 
-int enviarResultadoLeds(char resultado);
+int enviarResultadoLeds(char *resultado);
 
 #endif

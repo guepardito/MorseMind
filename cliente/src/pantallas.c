@@ -17,7 +17,7 @@
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #define PORT 8080
-#define SERVER_ADDR "10.207.0.42"//"192.168.1.16" // Dirección IP de tu Raspberry Pi
+//#define SERVER_ADDR "10.207.0.42"//"192.168.1.16" // Dirección IP de tu Raspberry Pi
 
 
 
@@ -49,6 +49,9 @@ void cerrar()
 void pantallaInicio()
 {
     iniciarLog("loggerActividad.log");
+    char ip_address[16];
+    obtener_ip(ip_address, sizeof(ip_address));
+    #define SERVER_ADDR ip_address;
     system("cls");
     logo();
     printf("                  I N I C I O                    \n");
@@ -1160,4 +1163,31 @@ void cerrarLog() {
         fclose(logFich);
         logFich = NULL;
     }
+}
+
+void obtener_ip(char *ip_buffer, size_t buffer_size)
+{
+    FILE *file = fopen("config.txt", "r");
+    if (file == NULL)
+    {
+        perror("Failed to open config file");
+        exit(EXIT_FAILURE);
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file))
+    {
+        if (strncmp(line, "IP=", 3) == 0)
+        {
+            strncpy(ip_buffer, line + 3, buffer_size - 1);
+            char *newline = strchr(ip_buffer, '\n');
+            if (newline)
+            {
+                *newline = '\0';
+            }
+            break;
+        }
+    }
+
+    fclose(file);
 }

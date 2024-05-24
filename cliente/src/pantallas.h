@@ -30,4 +30,6 @@ void cerrarLog();
 
 int enviarResultadoLeds(char *resultado);
 
+void obtener_ip(char *ip_buffer, size_t buffer_size);
+
 #endif

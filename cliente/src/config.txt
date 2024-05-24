@@ -1,5 +1,2 @@
-server_ip 192.168.1.16
-server_port 27015
-admin_user pi
-admin_password raspberry
-database_path ./database.sqlite
+IP=10.207.0.42
+server_port=8080

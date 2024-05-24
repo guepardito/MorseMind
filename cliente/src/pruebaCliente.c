@@ -6,9 +6,12 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #define PORT 8080
-#define SERVER_ADDR "10.207.0.42" // Dirección IP de tu Raspberry Pi
+//#define SERVER_ADDR "10.207.0.42" // Dirección IP de tu Raspberry Pi
 
 int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
+    char ip_address[16];
+    obtener_ip_serv(ip_address, sizeof(ip_address));
+    #define SERVER_ADDR ip_address;
     //printf("Inicializando Winsock...\n");
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
         printf("ERROR: No se ha podido conectar con el servidor\n");
@@ -23,7 +26,7 @@ int crearSocket(WSADATA wsa, SOCKET *sock, struct sockaddr_in *server) {
         WSACleanup();
         return 1;
     }
-    server->sin_addr.s_addr = inet_addr(SERVER_ADDR);
+    server->sin_addr.s_addr = inet_addr(ip_address);
     server->sin_family = AF_INET;
     server->sin_port = htons(PORT);
 
@@ -92,3 +95,30 @@ int main() {
 
     return 0;
 }*/
+
+void obtener_ip_serv(char *ip_buffer, size_t buffer_size)
+{
+    FILE *file = fopen("config.txt", "r");
+    if (file == NULL)
+    {
+        perror("Failed to open config file");
+        exit(EXIT_FAILURE);
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file))
+    {
+        if (strncmp(line, "IP=", 3) == 0)
+        {
+            strncpy(ip_buffer, line + 3, buffer_size - 1);
+            char *newline = strchr(ip_buffer, '\n');
+            if (newline)
+            {
+                *newline = '\0';
+            }
+            break;
+        }
+    }
+
+    fclose(file);
+}

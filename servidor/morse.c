@@ -402,7 +402,7 @@ void display_morse_string(const char* morse_string) {
 
     matrix_clear(); // Limpiar la matriz al inicio
     int a = 0;
-    while (a<400) {
+    while (a<1) {
     int position = 0; // Posición inicial en la matriz
     // Iterar a través de cada carácter en la cadena de caracteres Morse
     int i = 0;
@@ -490,7 +490,7 @@ void display_ganar() {
     
     matrix_clear(); // Limpiar la matriz al inicio
     int a = 0;
-    while (a<400) {
+    while (a<1) {
       int x, y;
       for (y = 0; y < height; y++) {
           for (x = 0; x < width; x++) {
@@ -547,7 +547,7 @@ void display_apagar() {
     
     matrix_clear(); // Limpiar la matriz al inicio
     int a = 0;
-    while (a<400) {
+    while (a<1) {
       int x, y;
       for (y = 0; y < height; y++) {
           for (x = 0; x < width; x++) {
@@ -604,7 +604,7 @@ void display_perder() {
     
     matrix_clear(); // Limpiar la matriz al inicio
     int a = 0;
-    while (a<400) {
+    while (a<1) {
       int x, y;
       for (y = 0; y < height; y++) {
           for (x = 0; x < width; x++) {
